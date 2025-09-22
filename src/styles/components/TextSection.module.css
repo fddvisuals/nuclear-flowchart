@@ -1,0 +1,77 @@
+.textSection {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the content */
+  justify-content: flex-start;
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+  overflow-x: hidden; /* Prevent horizontal overflow */
+  max-width: 80%;
+  margin: 20px auto;
+} 
+
+.textContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-style: normal;
+  position: relative;
+  flex-shrink: 0;
+  color: var(--fdd-text-web-grey, #666);
+  text-align: left;
+  max-width: 800px; /* Limit max width */
+  width: 100%; /* Full width up to max */
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+
+}
+
+.textContentText {
+  margin: 0 0 1.2em 0; /* Add bottom margin for paragraph spacing */
+  line-height: 1.6;
+
+}
+
+.textContentText:last-child {
+  margin-bottom: 0; /* Remove bottom margin from last paragraph */
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .textContent {
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: 100%; /* Full width on mobile */
+  }
+  
+  .textContentText {
+    margin: 0 0 1em 0; /* Slightly less spacing on mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .textSection {
+    /* padding: 20px 10px; More aggressive padding reduction */
+  }
+  
+  .textContent {
+    font-size: 14px;
+    line-height: 1.4;
+    max-width: 100%; /* Ensure full width usage */
+  }
+}
+
+/* Very small screens */
+@media (max-width: 320px) {
+  .textSection {
+    padding: 15px 8px; /* Minimal padding for very small screens */
+  }
+  
+  .textContent {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+}

@@ -1,0 +1,109 @@
+.fddNavBar {
+  position: fixed;
+  background-color: #00558c;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 75px;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  padding: 0 30px;
+  box-sizing: border-box;
+  z-index: 1000;
+}
+
+.fddNavBar.scrolled {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+}
+
+.fddLogoSvg {
+  height: 80%;
+  width: auto;
+  transition: all 0.3s ease;
+}
+
+.titleContainer {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+.titleVisible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.titleHidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-10px);
+  pointer-events: none;
+}
+
+.navTitle {
+  color: white;
+  font-family: lato, sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: none;
+}
+
+.visualsTextSvg {
+  height: 45px;
+  width: auto;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .fddNavBar {
+    padding: 0 20px;
+    height: 70px;
+    justify-content: center;
+  }
+  
+  .fddNavBar.scrolled {
+    height: 60px; /* Smaller on scroll */
+  }
+  
+  .fddLogoSvg {
+    height: 75%;
+  }
+  
+  .logoScrolled {
+    height: 65% !important; /* Smaller logo on mobile scroll */
+  }
+  
+  .titleContainer {
+    display: none; /* Hide title on mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .fddNavBar {
+    padding: 0 15px;
+    height: 65px;
+  }
+  
+  .fddNavBar.scrolled {
+    height: 55px; /* Even smaller on scroll */
+  }
+  
+  .fddLogoSvg {
+    height: 70%;
+  }
+  
+  .logoScrolled {
+    height: 60% !important; /* Even smaller logo on mobile scroll */
+  }
+}

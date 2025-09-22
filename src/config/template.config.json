@@ -1,0 +1,48 @@
+{
+  "project": {
+    "name": "FDD Visual Template",
+    "shortName": "fdd-visual-template",
+    "githubPages": {
+      "baseUrl": "/Gas-Leak-Incidents/",
+      "repository": "Gas-Leak-Incidents"
+    }
+  },
+  "seo": {
+    "title": "Mapping a Shadow War: Explosions Across Iran After the 12-Day War",
+    "description": "Interactive map and database of gas leak-induced fires and explosions incidents with detailed evidence and analysis.",
+    "keywords": ["gas leak", "explosion", "fire", "incident", "safety", "infrastructure", "Iran", "database"],
+    "canonicalUrl": "https://www.fdd.org/analysis/2025/08/12/mapping-a-shadow-war-explosions-across-iran-after-the-12-day-war/",
+    "ogImage": "https://fddvisuals.github.io/Gas-Leak-Incidents/images/preview.png",
+    "author": "FDD Visuals",
+    "type": "website"
+  },
+  "content": {
+    "header": {
+      "title": "Mapping a Shadow War",
+      "subtitle": "Explosions Across Iran After the 12-Day War"
+    },
+    "navigation": {
+      "showHome": true,
+      "customLinks": []
+    },
+    "sections": {
+      "enableTextSection": true,
+      "enableMethodology": true,
+      "enableRelatedProducts": true,
+      "enableCredits": true,
+      "enableRelatedVisuals": true
+    }
+  },
+  "interactive": {
+    "type": "map",
+    "availableTypes": ["map", "chart", "custom"],
+    "height": "100vh",
+    "backgroundColor": "transparent",
+    "dataSource": "./incidents-data.csv"
+  },
+  "styling": {
+    "theme": "default",
+    "primaryColor": "#1a472a",
+    "accentColor": "#2563eb"
+  }
+}

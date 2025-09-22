@@ -1,0 +1,35 @@
+.credits {
+  padding: 2rem 1rem;
+  width: 100vw;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--fdd-text-web-grey);
+}
+
+.byline {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-style: italic;
+  margin: 0 auto;
+  text-align: center;
+  max-width: 90%;
+  
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    font-size: 14px;
+    line-height: 1.4;
+    padding: 0 1rem;
+  }
+}
+
+.creditsText {
+  font-family: 'Lato', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
