@@ -1,5 +1,3 @@
-import styles from "../../styles/components/TextSection.module.css";
-
 interface TextSectionProps {
   content?: string;
   width?: string;
@@ -16,20 +14,24 @@ const renderParagraphs = (content: string) => {
   return paragraphs.map((paragraph, index) => (
     <p
       key={index}
-      className={styles.textContentText}
+      className="text-lg text-gray-700 leading-relaxed mb-6"
       dangerouslySetInnerHTML={{ __html: paragraph }}
     />
   ));
 };
 
 export function TextSection({ 
-  content = `Following the war between Israel and Iran in June, the conflict has <a href="https://www.fdd.org/analysis/2025/07/08/the-iran-israel-war-returns-to-the-shadows-for-now/" target="_blank">slid</a> back into the shadows. Inside Iran’s territory, a series of explosions has <a href="https://www.longwarjournal.org/archives/2025/07/mysterious-wave-of-explosions-sudden-irgc-death-disrupt-post-ceasefire-calm-in-iran.php" target="_blank">caused</a> suspicion. Israel’s deep <a href="https://www.cnn.com/2025/06/13/middleeast/israel-attack-iran-mossad-analysis-latam-intl" target="_blank">intelligence penetration</a> of the country, as demonstrated by the 12-Day War, raises the question: are these explosions sabotage operations? However, the Islamic regime has downplayed the events, attributing many to gas leaks or other accidents. While Jerusalem has not addressed the events, it may be behind these explosions, seeking to strengthen Israel’s position vis-à-vis the Islamic Republic in anticipation of another round of fighting. For its part, Tehran continues to stoke violence by <a href="https://www.centcom.mil/MEDIA/PRESS-RELEASES/Press-Release-View/Article/4246960/yemeni-partners-successfully-interdict-massive-iranian-weapons-shipment-bound-f/" target="_blank">arming</a> the Houthis, the regime’s terrorist partner in Yemen, as the group launches missiles and drones at the Jewish state. The Islamic regime itself threatens the West with <a href="https://thehill.com/policy/national-security/5363528-us-border-patrol-iranian-sleeper-cells-threat/" target="_blank">sleeper cells</a> and <a href="https://www.cisa.gov/sites/default/files/2025-06/joint-fact-sheet-Iranian-cyber-actors-may-target-vulnerable-US-networks-and-entities-of-interest-508c-1.pdf" target="_blank">cyberattacks</a> amidst calls from clerics for the <a href="https://www.fdd.org/analysis/2025/07/17/iran-is-out-to-kill-trump/" target="_blank">assassination</a> of President Trump.`,
+  content = `Following coordinated strikes by Israeli and U.S. forces on Iran's nuclear infrastructure, significant bottlenecks have emerged across the Islamic Republic's nuclear weapons supply chain. This interactive analysis examines the impact of these operations on Iran's nuclear capabilities, mapping damage assessments and supply chain disruptions.
+
+The strikes targeted key facilities across Iran's nuclear fuel production and weaponization programs, causing unprecedented disruption to the regime's nuclear ambitions. Intelligence assessments indicate that critical manufacturing capabilities have been severely compromised, potentially setting back Iran's nuclear weapons program by several years.
+
+This visualization provides a comprehensive overview of the affected facilities, their operational status, and the cascading effects on Iran's nuclear supply chain. Users can explore both flowchart and stack views to understand the interconnected nature of Iran's nuclear infrastructure and the strategic impact of the coordinated strikes.`,
   width
 }: TextSectionProps) {
   return (
-    <div className={styles.textSection}>
+    <div className="max-w-4xl mx-auto px-6 py-12">
       <div 
-        className={styles.textContent}
+        className="prose prose-lg max-w-none"
         style={width ? { maxWidth: width } : undefined}
       >
         {renderParagraphs(content)}
@@ -39,35 +41,14 @@ export function TextSection({
 }
 
 export function MethodologySection() {
-  const methodologyContent = `Each of the entries in this data set is based on still images or video shared by professional journalists or Iranian diaspora outlets. The individuals and outlets regularly receive content from people on the ground and publish the content after at least preliminary verification. Each entry links to the material on which it is based and corresponds to a single incident.`;
+  const methodologyContent = `This analysis is based on open-source intelligence, satellite imagery, and verified reports from multiple intelligence agencies. Each facility assessment includes operational status verification, damage assessment, and supply chain impact analysis. The data represents the most current available information as of the assessment date and is updated as new intelligence becomes available.`;
 
   return (
-    <div className={styles.textSection}>
-      <h3>Methodology</h3>
-      <div className={styles.textContent}>
+    <div className="max-w-4xl mx-auto px-6 py-12 bg-gray-50">
+      <h3 className="text-2xl font-bold text-gray-900 mb-6">Methodology</h3>
+      <div className="prose prose-lg max-w-none">
         {renderParagraphs(methodologyContent)}
       </div>
     </div>
   );
-}
-
-// Additional paragraph components for different content types
-export function IntroductionSection({ content }: { content: string }) {
-  return <TextSection content={content} />;
-}
-
-export function ConclusionSection({ content }: { content: string }) {
-  return <TextSection content={content} />;
-}
-
-export function AnalysisSection({ content, width }: { content: string; width?: string }) {
-  return <TextSection content={content} width={width} />;
-}
-
-export function SummarySection({ content }: { content: string }) {
-  return <TextSection content={content} />;
-}
-
-export function BackgroundSection({ content }: { content: string }) {
-  return <TextSection content={content} />;
 }

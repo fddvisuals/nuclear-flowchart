@@ -121,4 +121,5 @@ const Footer: React.FC = () => {
     );
 };
 
+export { Footer as FDDFooter };
 export default Footer;
