@@ -1,0 +1,55 @@
+Item_Id,Main-Category,Sub-Category,,Sub_Item,Locations,Sub_Item_Status
+1,Fuel Production,Centrifuge component manufacturing companies,,Location 1,Several workshops locations not public,Unknown/Non-operational
+2,Fuel Production,Centrifuge component manufacturing companies,,Location 2,Imported components and raw materials,Unknown/Non-operational
+3,Fuel Weaponization,Nuclear warhead assembly,,Location 1,Previously under construction at Parchin,Unknown/Non-operational
+4,Fuel Weaponization,Neutron initiator production,,Location 1,Unidentified Site,Destroyed
+5,Fuel Weaponization,R&D radiation & explosives,,Location 1,Lavisan 2/Mojdeh Site,Destroyed
+6,Fuel Weaponization,R&D radiation & explosives,,Location 2,Shahid Shariarti,Destroyed
+7,Fuel Weaponization,Multi-point initiation system plastic explosives precursor manufacturing R&D and testing,,Location 1,Taleghan 1 (likely dismantled),Unknown/Non-operational
+8,Fuel Weaponization,Multi-point initiation system plastic explosives precursor manufacturing R&D and testing,,Location 2,Taleghan 2 Destroyed in Oct. 2024 Israeli strike,Destroyed
+9,Fuel Weaponization,Multi-point initiation system plastic explosives precursor manufacturing R&D and testing,,Location 3,Shahid Meysami,Destroyed
+10,Fuel Weaponization,Multi-point initiation system plastic explosives precursor manufacturing R&D and testing,,Location 4,HMX Production,Unknown/Non-operational
+11,Fuel Weaponization,Multi-point initiation system development and testing,,Location 1,Sanjarian,Destroyed
+12,Fuel Weaponization,Multi-point initiation system development and testing,,Location 2,Shahid Karimi Group/Lavisan 2/Mojdeh Site,Pink/Red with Purple Border
+13,Fuel Weaponization,Multi-point initiation system development and testing,,Location 3,Goleb Dareh,Unknown/Non-operational
+14,Fuel Weaponization,Administration personnel nuclear weapons theory & simulation computation modeling design documentation back-up nuclear archive/weap...,,Location 1,SPND Headquarters Tehran,Destroyed
+15,Fuel Weaponization,Administration personnel nuclear weapons theory & simulation computation modeling design documentation back-up nuclear archive/weap...,,Location 2,Former SPND HQ: Lavisan 2/Mojdeh Building,Destroyed
+16,Fuel Weaponization,Administration personnel nuclear weapons theory & simulation computation modeling design documentation back-up nuclear archive/weap...,,Location 3,Institute of Applied Physics Annex,Destroyed
+17,Fuel Weaponization,Weapons-grade uranium metal (or plutonium) core and component manufacturing,,Location 1,Unknown,Unknown/Non-operational
+18,Fuel Weaponization,Lab-scale uranium metal production,,Location 1,Esfahan Uranium Metal Conversion Lab,Destroyed
+19,Fuel Weaponization,Lab-scale uranium metal production,,Location 2,Esfahan Fuel Plate Manufacturing Plant (FPFP) Uranium Metal Line,Destroyed
+20,Fuel Weaponization,Plutonium reprocessing,,Location 1,Unknown to Exist,Unknown/Non-operational
+21,Fuel Production,HEU storage,,Location 1,Esfahan Tunnel Complex - Entrances destroyed,Destroyed
+22,Fuel Production,HEU storage,,Location 2,Esfahan Shipping and Receiving Building,Destroyed
+23,Fuel Production,Heavy water reactor and plutonium fabrication,,Location 1,Khondab (Arak) Under Construction Reactor & Hot Cells/Production Building,Destroyed
+24,Fuel Production,Heavy water reactor and plutonium fabrication,,Location 2,Darhovin reactor,Under construction
+25,Fuel Production,Research reactor,,Location 1,Tehran Research Reactor (TRR),Known/Operational
+26,Fuel Production,Power reactors and Small modular reactors,,Location 1,Bushehr Nuclear Power Plant (BNPP) built by Russia,Known/Operational
+27,Fuel Production,Power reactors and Small modular reactors,,Location 2,Planned power reactors and Small modular reactors to be built by Ru...,Under construction
+28,Fuel Production,Fuel manufacturing,,Location 1,Esfahan Fuel Manufacturing Plant (FMP) (LEU for heavy water reactor),Destroyed
+29,Fuel Production,Fuel manufacturing,,Location 2,Esfahan Fuel Plate Manufacturing Plant (FPFP) (20% LEU),Destroyed
+30,Fuel Production,Fuel manufacturing,,Location 3,Esfahan Central Chemical Laboratory,Destroyed
+31,Fuel Production,Fuel manufacturing,,Location 4,Esfahan Uranium Powder Plant (EUPP) (UO2 LEU),Known/Operational
+32,Fuel Production,Fuel manufacturing,,Location 5,Zirconium Production Plant (ZPP)/ hafnium oxide production,Known/Operational
+33,Fuel Production,Heavy water production,,Location 1,Khondab (Arak) Plant,Destroyed
+34,Fuel Production,Heavy water production,,Location 2,Exports to/storage in Oman under JCPOA 2016,Unknown/Non-operational
+35,Fuel Production,Russian supply,,Location 1,Enriched uranium fuel,Known/Operational
+36,Fuel Production,Uranium enrichment,,Location 1,Natanz Pilot Fuel Enrichment Plant,Destroyed
+37,Fuel Production,Uranium enrichment,,Location 2,Fordow Fuel Enrichment Plant Qom,Likely destroyed
+38,Fuel Production,Uranium enrichment,,Location 3,Natanz Pickaxe Mountain Site (Deeply buried >100+ m),Unknown/Non-operational
+39,Fuel Production,Uranium enrichment,,Location 4,Esfahan Fuel Enrichment Plant (Deeply buried),Under construction
+40,Fuel Production,Uranium enrichment,,Location 5,Lashkar Abad laser enrichment plant,Unknown/Non-operational
+41,Fuel Production,Uranium conversion/production of UF6,,Location 1,Esfahan Uranium Conversion Facility,Destroyed
+42,Fuel Production,Uranium milling,,Location 1,Ardakan Yellowcake Production Plant,Known/Operational
+43,Fuel Production,Uranium milling,,Location 2,Gchine mill (until 2016),Unknown/Non-operational
+44,Fuel Production,Foreign uranium imports,,Location 1,South Africa 1980s; Kazakhstan 2015 JCPOA; Russia (?); Unknown others(?),Unknown/Non-operational
+45,Fuel Production,Uranium mining,,Location 1,Saghand 1 & 2,Known/Operational
+46,Fuel Production,Uranium mining,,Location 2,Khoshumi,Unknown/Non-operational
+47,Fuel Production,Uranium mining,,Location 3,Narigan,Unknown/Non-operational
+48,Fuel Production,Uranium mining,,Location 4,Gchine (until 2016),Unknown/Non-operational
+49,Fuel Production,Centrifuge stockpiles and components,,Location 1,Unknown site(s),Unknown/Non-operational
+50,Fuel Production,Centrifuge testing and development,,Location 1,Tehran Nuclear Research Center,Destroyed
+51,Fuel Production,Centrifuge testing and development,,Location 2,Kalaye Electric/Damavand Rd,Destroyed
+52,Fuel Production,Centrifuge manufacturing and assemblies,,Location 1,TABA/TESA Karaj Site,Destroyed
+53,Fuel Production,Centrifuge manufacturing and assemblies,,Location 2,Esfahan Tunnels Site,Destroyed
+54,Fuel Production,Centrifuge manufacturing and assemblies,,Location 3,Natanz Pickaxe Mountain Site,Under construction

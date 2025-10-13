@@ -21,11 +21,11 @@ const renderParagraphs = (content: string) => {
 };
 
 export function TextSection({ 
-  content = `Following coordinated strikes by Israeli and U.S. forces on Iran's nuclear infrastructure, significant bottlenecks have emerged across the Islamic Republic's nuclear weapons supply chain. This interactive analysis examines the impact of these operations on Iran's nuclear capabilities, mapping damage assessments and supply chain disruptions.
+  content = `Lorem ipsum dolor sit amet finibus donec condimentum. Lectus torquent sit primis si consequat tellus erat tincidunt dictumst. Efficitur porta arcu augue letius lobortis. Velit etiam non ullamcorper condimentum tempus elementum ante justo. Massa dapibus quis nostra dis fringilla ullamcorper aliquam nullam at.
 
-The strikes targeted key facilities across Iran's nuclear fuel production and weaponization programs, causing unprecedented disruption to the regime's nuclear ambitions. Intelligence assessments indicate that critical manufacturing capabilities have been severely compromised, potentially setting back Iran's nuclear weapons program by several years.
+Tempor quisque blandit mattis ornare integer lobortis vulputate. Eget elit ornare lobortis dolor aliquam mus vitae est. Justo at nunc tempus laoreet convallis ligula cubilia ultrices orci hac sem. Sodales vestibulum tincidunt sed parturient himenaeos facilisis nam interdum rutrum. Tellus netus viverra fringilla laoreet vivamus amet fusce.
 
-This visualization provides a comprehensive overview of the affected facilities, their operational status, and the cascading effects on Iran's nuclear supply chain. Users can explore both flowchart and stack views to understand the interconnected nature of Iran's nuclear infrastructure and the strategic impact of the coordinated strikes.`,
+Viverra duis litora diam est mus facilisi ex quam faucibus eleifend. Dapibus ligula mauris felis est ultrices pede pretium. Odio elementum risus curabitur finibus hendrerit euismod commodo dictumst. Mi enim eu a felis sagittis vestibulum viverra luctus lobortis. Turpis eget facilisis tellus nostra nulla erat neque id. Efficitur ad etiam amet mi neque consectetuer nunc netus. Dui habitasse ornare purus rutrum fames cubilia porttitor.`,
   width
 }: TextSectionProps) {
   return (

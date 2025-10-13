@@ -1,6 +1,6 @@
-import React from 'react';
-import { FilterType, nuclearData, statusColors, Stage, Component, SubItem } from '../data/nuclearData';
-import StatusBarChart from './StatusBarChart';
+import React, { useMemo } from 'react';
+import { FilterType, statusColors, StatusType } from '../data/nuclearData';
+import { FacilityData } from '../utils/csvLoader';
 
 interface StackViewProps {
   activeFilters: FilterType[];
@@ -8,372 +8,276 @@ interface StackViewProps {
   onItemClick: (itemId: string) => void;
   expandedItems: string[];
   onToggleExpand: (itemId: string) => void;
+  facilityData: FacilityData[];
 }
 
 const StackView: React.FC<StackViewProps> = ({ 
   activeFilters, 
-  highlightedItems, 
- 
+  highlightedItems,
+  onItemClick,
   expandedItems: _expandedItems,
-  onToggleExpand: _onToggleExpand
+  onToggleExpand: _onToggleExpand,
+  facilityData
 }) => {
-  // Note: We use the hard-coded nuclear data structure for the stack view
-  // and calculate status counts directly from SVG color analysis
+  // Group CSV data by Main-Category and Sub-Category
+  const groupedData = useMemo(() => {
+    const groups: {
+      [mainCategory: string]: {
+        [subCategory: string]: FacilityData[]
+      }
+    } = {};
 
-  // Calculate status counts with specified values
-  const getStatusCounts = () => {
-    const statusColors = {
-      'destroyed': '#FFC7C2',
-      'unknown': '#DCDCDC',
-      'operational': '#9FE2AA',
-      'likely-destroyed': '#FFE0C2',
-      'construction': '#DCCCFF'
-    };
+    facilityData.forEach(facility => {
+      const mainCat = facility['Main-Category'] || 'Unknown';
+      const subCat = facility['Sub-Category'] || 'Unknown';
 
-    const statusDisplayNames = {
-      'destroyed': 'Destroyed',
-      'unknown': 'Unknown',
-      'operational': 'Operational',
-      'likely-destroyed': 'Likely Destroyed',
-      'construction': 'Under Construction'
-    };
+      if (!groups[mainCat]) {
+        groups[mainCat] = {};
+      }
+      if (!groups[mainCat][subCat]) {
+        groups[mainCat][subCat] = [];
+      }
+      groups[mainCat][subCat].push(facility);
+    });
 
-    // Return the specific counts requested
-    const statusCounts = [
-      { status: 'destroyed', count: 25 },
-      { status: 'unknown', count: 11 },
-      { status: 'operational', count: 5 },
-      { status: 'likely-destroyed', count: 3 },
-      { status: 'construction', count: 1 }
-    ];
+    return groups;
+  }, [facilityData]);
 
-    return statusCounts.map(({ status, count }) => ({
-      status,
-      count,
-      color: statusColors[status as keyof typeof statusColors],
-      displayName: statusDisplayNames[status as keyof typeof statusDisplayNames]
-    }));
+  // Normalize status from CSV to match filter types
+  const normalizeStatus = (status: string): StatusType => {
+    const statusLower = status?.toLowerCase() || '';
+    
+    if (statusLower.includes('likely') && statusLower.includes('destroyed')) {
+      return 'likely-destroyed';
+    }
+    if (statusLower.includes('destroyed') && !statusLower.includes('likely')) {
+      return 'destroyed';
+    }
+    if (statusLower.includes('construction') || statusLower.includes('under construction')) {
+      return 'construction';
+    }
+    if (statusLower.includes('operational') && !statusLower.includes('non-operational')) {
+      return 'operational';
+    }
+    return 'unknown';
   };
 
-  const shouldShowItem = (itemType: 'fuel-production' | 'fuel-weaponization', status?: string) => {
+  // Check if a facility should be shown based on active filters
+  const shouldShowFacility = (facility: FacilityData): boolean => {
     if (activeFilters.includes('all')) return true;
-    
-    let shouldShow = false;
-    
-    // Check category filters (fuel-production, fuel-weaponization)
-    if (activeFilters.includes(itemType)) {
-      shouldShow = true;
-    }
-    
-    // Check component type filters
-    if (activeFilters.includes('components') || activeFilters.includes('sub-items') || activeFilters.includes('standalone')) {
-      shouldShow = true;
-    }
-    
+
+    const mainCategory = facility['Main-Category'];
+    const status = normalizeStatus(facility.Sub_Item_Status || '');
+
+    // Check category filters
+    const categoryMatches = 
+      (activeFilters.includes('fuel-production') && mainCategory === 'Fuel Production') ||
+      (activeFilters.includes('fuel-weaponization') && mainCategory === 'Fuel Weaponization');
+
     // Check status filters
     const statusFilters = activeFilters.filter(f => 
       ['operational', 'destroyed', 'unknown', 'construction', 'likely-destroyed'].includes(f)
     );
-    
-    if (statusFilters.length > 0) {
-      // If status filters are active, only show items that match the status
-      if (status && statusFilters.includes(status as FilterType)) {
-        shouldShow = true;
-      } else if (status) {
-        // Item has status but doesn't match any selected status filter
-        shouldShow = false;
-      }
-      // For items without status (parent components), we'll check if they have matching children
-    }
-    
-    return shouldShow;
-  };
 
-  // Smart component filtering - only show components that have matching sub-items
-  const shouldShowComponent = (component: Component) => {
-    if (activeFilters.includes('all')) return true;
+    const statusMatches = statusFilters.length === 0 || statusFilters.includes(status as FilterType);
+
+    // If both category and status filters exist, both must match
+    const hasCategoryFilters = activeFilters.includes('fuel-production') || activeFilters.includes('fuel-weaponization');
     
-    // Check if the component type matches category filters
-    if (activeFilters.includes(component.type)) return true;
+    if (hasCategoryFilters && statusFilters.length > 0) {
+      return categoryMatches && statusMatches;
+    }
     
-    // Check status filters - only show component if it has sub-items matching the status
-    const statusFilters = activeFilters.filter(f => 
-      ['operational', 'destroyed', 'unknown', 'construction', 'likely-destroyed'].includes(f)
-    );
+    if (hasCategoryFilters) {
+      return categoryMatches;
+    }
     
     if (statusFilters.length > 0) {
-      // Component should only be shown if it has at least one sub-item matching the status filters
-      const hasMatchingSubItems = component.subItems.some(subItem => 
-        statusFilters.includes(subItem.status as FilterType)
-      );
-      return hasMatchingSubItems;
+      return statusMatches;
     }
-    
-    // Check component type filters
-    if (activeFilters.includes('components') || activeFilters.includes('sub-items') || activeFilters.includes('standalone')) {
-      return true;
-    }
-    
+
     return false;
   };
 
-  // Smart stage filtering - only show stages that have matching components
-  const shouldShowStage = (stage: Stage) => {
-    if (activeFilters.includes('all')) return true;
-    
-    // Stage should only be shown if it has at least one component that should be shown
-    return stage.components.some(component => shouldShowComponent(component));
-  };
+  // Filter facilities based on active filters
+  const filteredData = useMemo(() => {
+    const filtered: {
+      [mainCategory: string]: {
+        [subCategory: string]: FacilityData[]
+      }
+    } = {};
 
-  
+    Object.keys(groupedData).forEach(mainCat => {
+      Object.keys(groupedData[mainCat]).forEach(subCat => {
+        const facilities = groupedData[mainCat][subCat].filter(shouldShowFacility);
+        
+        if (facilities.length > 0) {
+          if (!filtered[mainCat]) {
+            filtered[mainCat] = {};
+          }
+          filtered[mainCat][subCat] = facilities;
+        }
+      });
+    });
 
-  const renderSubItem = (subItem: SubItem) => {
+    return filtered;
+  }, [groupedData, activeFilters]);
+
+  // Render individual facility item
+  const renderFacility = (facility: FacilityData) => {
+    const status = normalizeStatus(facility.Sub_Item_Status || '');
+    const isHighlighted = highlightedItems.includes(facility.Item_Id);
+
     return (
-      <div key={subItem.id} className="group py-2 px-3 hover:bg-slate-50 rounded-md transition-all duration-200">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div 
-              className="w-2 h-2 rounded-full flex-shrink-0 ring-1 ring-white shadow-sm" 
-              style={{ backgroundColor: statusColors[subItem.status] }}
-            />
-            <div className="flex-1 min-w-0">
-              <h4 className="text-sm font-medium text-slate-800 truncate group-hover:text-slate-900 transition-colors">
-                {subItem.name}
+      <div 
+        key={facility.Item_Id}
+        className={`group relative py-3 px-4 hover:bg-gradient-to-r hover:from-white hover:to-slate-50/50 rounded-lg transition-all duration-300 border border-transparent hover:border-slate-200/50 hover:shadow-sm cursor-pointer ${
+          isHighlighted ? 'bg-blue-50 border-blue-200' : ''
+        }`}
+        onClick={() => onItemClick(facility.Item_Id)}
+      >
+        <div className="flex items-start justify-between">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-3 mb-1">
+              <div 
+                className="w-3 h-3 rounded-full shadow-inner flex-shrink-0"
+                style={{ backgroundColor: statusColors[status] }}
+              />
+              <h4 className="font-medium text-slate-800 text-sm leading-tight truncate">
+                {facility.Locations || facility.Sub_Item || 'Unknown Location'}
               </h4>
-              {subItem.description && (
-                <p className="text-xs text-slate-500 mt-0.5 line-clamp-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {subItem.description}
-                </p>
-              )}
             </div>
+            {facility.Sub_Item && facility.Sub_Item !== facility.Locations && (
+              <p className="text-xs text-slate-600 ml-6 truncate">{facility.Sub_Item}</p>
+            )}
           </div>
-          <div className="flex items-center gap-2 ml-3">
-            <span className="text-xs text-slate-400 font-light tracking-wide capitalize">
-              {subItem.status.replace('-', ' ')}
-            </span>
-          </div>
+          <span className="ml-3 flex-shrink-0">
+            <div 
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: statusColors[status] }}
+            />
+          </span>
         </div>
       </div>
     );
   };
 
-  const renderComponent = (component: Component) => {
-    if (!shouldShowComponent(component)) return null;
-
-    const isHighlighted = highlightedItems.includes(component.id);
-    const visibleSubItems = component.subItems.filter(subItem => 
-      shouldShowItem(component.type, subItem.status)
-    );
-
-    // If we have status filters active and no visible sub-items, don't show the component
-    const statusFilters = activeFilters.filter(f => 
-      ['operational', 'destroyed', 'unknown', 'construction', 'likely-destroyed'].includes(f)
-    );
-    if (statusFilters.length > 0 && visibleSubItems.length === 0) {
-      return null;
-    }
+  // Render sub-category group
+  const renderSubCategory = (mainCat: string, subCat: string, facilities: FacilityData[]) => {
+    // Count facilities by status
+    const statusCounts: Record<string, number> = {};
+    facilities.forEach(facility => {
+      const status = normalizeStatus(facility.Sub_Item_Status || '');
+      statusCounts[status] = (statusCounts[status] || 0) + 1;
+    });
 
     return (
-      <div key={component.id} className="mb-6">
-        {/* Component Header */}
-        <div 
-          className={`relative overflow-hidden rounded-t-xl border-2 ${
-            component.type === 'fuel-production' 
-              ? 'bg-gradient-to-r from-blue-100 to-blue-50 border-blue-300' 
-              : 'bg-gradient-to-r from-red-100 to-red-50 border-red-300'
-          } ${isHighlighted ? 'ring-2 ring-yellow-400 ring-offset-2' : ''}`}
-        >
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <h3 className={`text-lg font-semibold tracking-wide ${
-                  component.type === 'fuel-production' ? 'text-blue-800' : 'text-red-800'
-                }`}>
-                  {component.name}
-                </h3>
-                <div className={`h-1 flex-1 max-w-16 rounded-full ${
-                  component.type === 'fuel-production' 
-                    ? 'bg-blue-400' 
-                    : 'bg-red-400'
-                }`} />
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="text-xs text-slate-500 font-mono tracking-wider">
-                  {visibleSubItems.length} location{visibleSubItems.length !== 1 ? 's' : ''}
-                </span>
-                {/* Minimalist Status Pills */}
-                {visibleSubItems.length > 0 && (
-                  <div className="flex items-center gap-1.5">
-                    {Object.entries(
-                      visibleSubItems.reduce((acc, item) => {
-                        acc[item.status] = (acc[item.status] || 0) + 1;
-                        return acc;
-                      }, {} as Record<string, number>)
-                    ).map(([status, count]) => (
-                      <div key={status} className="flex items-center gap-1 px-2 py-1 bg-white/60 backdrop-blur-sm rounded-full border border-white/80">
-                        <div 
-                          className="w-1.5 h-1.5 rounded-full" 
-                          style={{ backgroundColor: statusColors[status as keyof typeof statusColors] }}
-                        />
-                        <span className="text-xs text-slate-600 font-medium">{count}</span>
-                      </div>
-                    ))}
+      <div key={`${mainCat}-${subCat}`} className="mb-6">
+        <div className="bg-gradient-to-r from-slate-100 to-slate-50 rounded-lg p-4 mb-3 border border-slate-200/50">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-slate-900 text-base mb-2 leading-tight">
+                {subCat}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(statusCounts).map(([status, count]) => (
+                  <div 
+                    key={status}
+                    className="inline-flex items-center gap-1.5 px-2 py-1 bg-white rounded-md border border-slate-200/50"
+                  >
+                    <div 
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: statusColors[status as StatusType] }}
+                    />
+                    <span className="text-xs text-slate-700 font-medium">
+                      {count} {status.replace('-', ' ')}
+                    </span>
                   </div>
-                )}
+                ))}
               </div>
             </div>
+            <span className="ml-3 px-3 py-1 bg-white rounded-full text-sm font-semibold text-slate-700 border border-slate-200/50 flex-shrink-0">
+              {facilities.length}
+            </span>
           </div>
         </div>
+        <div className="space-y-1 pl-2">
+          {facilities.map(facility => renderFacility(facility))}
+        </div>
+      </div>
+    );
+  };
 
-        {/* All Sub-items Always Visible */}
-        {visibleSubItems.length > 0 && (
-          <div className={`border-x-2 border-b-2 rounded-b-xl bg-white shadow-sm ${
-            component.type === 'fuel-production' 
-              ? 'border-blue-300' 
-              : 'border-red-300'
-          }`}>
-            <div className="px-4 py-3 space-y-1">
-              {visibleSubItems.map(subItem => renderSubItem(subItem))}
-            </div>
+  // Render main category (Fuel Production or Fuel Weaponization)
+  const renderMainCategory = (mainCat: string) => {
+    const subCategories = filteredData[mainCat];
+    if (!subCategories || Object.keys(subCategories).length === 0) return null;
+
+    const totalFacilities = Object.values(subCategories).reduce(
+      (sum, facilities) => sum + facilities.length, 
+      0
+    );
+
+    const categoryColor = mainCat === 'Fuel Production' ? '#00558C' : '#000000';
+
+    return (
+      <div key={mainCat} className="space-y-4">
+        <div 
+          className="sticky top-0 z-10 py-4 px-5 rounded-xl border-2 shadow-md"
+          style={{ 
+            backgroundColor: categoryColor,
+            borderColor: categoryColor 
+          }}
+        >
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-white tracking-tight">
+              {mainCat}
+            </h2>
+            <span className="px-4 py-1.5 bg-white/90 backdrop-blur-sm rounded-full text-sm font-bold shadow-sm" style={{ color: categoryColor }}>
+              {totalFacilities} facilities
+            </span>
           </div>
+        </div>
+        {Object.entries(subCategories).map(([subCat, facilities]) => 
+          renderSubCategory(mainCat, subCat, facilities)
         )}
       </div>
     );
   };
 
-  const renderStage = (stage: Stage) => {
-    const visibleComponents = stage.components.filter(component => shouldShowComponent(component));
-    if (visibleComponents.length === 0) return null;
-
-
-
+  if (facilityData.length === 0) {
     return (
-      <div key={stage.id} className="mb-8">
-        {/* Stage Summary */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between py-2 border-b border-slate-100">
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-              {visibleComponents.length} component{visibleComponents.length !== 1 ? 's' : ''} • {
-                visibleComponents.reduce((total, comp) => 
-                  total + comp.subItems.filter(sub => shouldShowItem(comp.type, sub.status)).length, 0
-                )
-              } locations
-            </p>
+      <div className="w-full h-full bg-gray-50 p-6 overflow-y-auto">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">Loading facility data...</p>
           </div>
-        </div>
-
-        {/* All Components Always Visible */}
-        <div className="space-y-4">
-          {visibleComponents.map(component => renderComponent(component))}
         </div>
       </div>
     );
-  };
-
-  const filteredData = nuclearData.filter(stage => shouldShowStage(stage));
+  }
 
   return (
     <div className="w-full h-full bg-gray-50 p-6 overflow-y-auto">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Post-Strike Assessment: Israeli and U.S. Strikes Caused Major Bottlenecks in Iran’s Nuclear Weapons Supply Chain
-          </h1>
-          <p className="text-gray-600">
-            Hierarchical view of nuclear fuel production and weaponization stages
-          </p>
-        </div>
-
-        {/* Status Bar Chart */}
-        <div className="mb-6">
-          <StatusBarChart 
-            statusCounts={getStatusCounts()} 
-            totalCount={getStatusCounts().reduce((sum, item) => sum + item.count, 0)}
-          />
-        </div>
-
-        {filteredData.length === 0 ? (
+        {Object.keys(filteredData).length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No items match the current filters</p>
+            <p className="text-gray-500 text-lg">No facilities match the current filters</p>
             <p className="text-gray-400 text-sm mt-2">Try adjusting your filter selection</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Fuel Production Column */}
             <div className="space-y-8">
-              <div className="sticky top-0 py-4 z-10 bg-gradient-to-r from-blue-50 to-blue-100 backdrop-blur-sm border-b-4 border-blue-500 rounded-lg">
-                <h2 className="text-2xl font-bold text-blue-800 tracking-wide px-4">
-                  Fuel Production
-                </h2>
-                <div className="w-16 h-1 bg-blue-500 mt-2 mx-4 rounded-full"></div>
-              </div>
-              <div className="space-y-6">
-                {filteredData
-                  .filter(stage => stage.type === 'fuel-production')
-                  .map(stage => renderStage(stage))}
-              </div>
+              {filteredData['Fuel Production'] && renderMainCategory('Fuel Production')}
             </div>
-
+            
             {/* Fuel Weaponization Column */}
             <div className="space-y-8">
-              <div className="sticky top-0 py-4 z-10 bg-gradient-to-r from-red-50 to-red-100 backdrop-blur-sm border-b-4 border-red-500 rounded-lg">
-                <h2 className="text-2xl font-bold text-red-800 tracking-wide px-4">
-                  Fuel Weaponization
-                </h2>
-                <div className="w-16 h-1 bg-red-500 mt-2 mx-4 rounded-full"></div>
-              </div>
-              <div className="space-y-6">
-                {filteredData
-                  .filter(stage => stage.type === 'fuel-weaponization')
-                  .map(stage => renderStage(stage))}
-              </div>
+              {filteredData['Fuel Weaponization'] && renderMainCategory('Fuel Weaponization')}
             </div>
           </div>
         )}
-
-        {/* Summary Statistics */}
-        <div className="mt-8 p-6 bg-white rounded-xl border">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Summary</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
-                {filteredData.length}
-              </div>
-              <div className="text-sm text-gray-600">Stages</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
-                {filteredData.reduce((total, stage) => 
-                  total + stage.components.filter(comp => shouldShowComponent(comp)).length, 0
-                )}
-              </div>
-              <div className="text-sm text-gray-600">Components</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">
-                {filteredData.reduce((total, stage) => 
-                  total + stage.components.reduce((compTotal, comp) => {
-                    if (!shouldShowComponent(comp)) return compTotal;
-                    return compTotal + comp.subItems.filter(sub => shouldShowItem(comp.type, sub.status)).length;
-                  }, 0), 0
-                )}
-              </div>
-              <div className="text-sm text-gray-600">Locations</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-600">
-                {filteredData.reduce((total, stage) => 
-                  total + stage.components.reduce((compTotal, comp) => 
-                    compTotal + comp.subItems.filter(sub => 
-                      shouldShowItem(comp.type, sub.status) && sub.description?.includes('killed')
-                    ).length, 0
-                  ), 0
-                )}
-              </div>
-              <div className="text-sm text-gray-600">Casualties</div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

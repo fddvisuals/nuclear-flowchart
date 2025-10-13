@@ -1,6 +1,0 @@
-node_modules/ 
-env/
-dist/
-for layout purposes/
-.DS_Store
-*.log

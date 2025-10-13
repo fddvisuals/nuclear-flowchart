@@ -45,7 +45,7 @@ export function Navigation() {
 function FddLogo({ isScrolled }: { isScrolled: boolean }) {
   return (
     <img
-          src="/images/Visuals_Logo_Temporary_v01 2.svg"
+          src={`${import.meta.env.BASE_URL}images/Visuals_Logo_Temporary_v01 2.svg`}
       alt="FDD Logo"
       className={`transition-all duration-300 ${
         isScrolled ? 'h-[65%]' : 'h-[80%]'
@@ -53,7 +53,7 @@ function FddLogo({ isScrolled }: { isScrolled: boolean }) {
       onError={(e) => {
         // Fallback to SVG version if PNG doesn't load
         const target = e.target as HTMLImageElement;
-        target.src = "/images/fdd-logo.svg";
+        target.src = `${import.meta.env.BASE_URL}images/fdd-logo.svg`;
         target.onerror = () => {
           // Final fallback to placeholder
           target.style.display = 'none';
