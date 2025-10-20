@@ -1,14 +1,23 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { MapPin, Map } from 'lucide-react';
 import { FilterType } from '../data/nuclearData';
-import { loadFacilityData, FacilityData, getStatusFromSVGColor, getFacilityById } from '../utils/csvLoader';
+import { loadFacilityData, FacilityData, getFacilityById } from '../utils/csvLoader';
 
 interface SVGViewerProps {
   activeFilters: FilterType[];
   highlightedItems: string[];
   onItemClick: (itemId: string) => void;
+  showLocations?: boolean;
+  onToggleLocations?: () => void;
 }
 
-const SVGViewer: React.FC<SVGViewerProps> = ({ activeFilters, highlightedItems, onItemClick }) => {
+const SVGViewer: React.FC<SVGViewerProps> = ({ 
+  activeFilters, 
+  highlightedItems, 
+  onItemClick,
+  showLocations = true,
+  onToggleLocations
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [svgContent, setSvgContent] = useState<string>('');
   const [facilityData, setFacilityData] = useState<FacilityData[]>([]);
@@ -60,7 +69,8 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ activeFilters, highlightedItems, 
 
     // Load SVG file
   useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}main-new.svg`)
+    const svgFile = showLocations ? 'main-new.svg' : 'main-withgroupings-collapsed.svg';
+    fetch(`${import.meta.env.BASE_URL}${svgFile}`)
       .then(response => response.text())
       .then(text => {
         // Replace all instances of font-family="Inter" with font-family="urw-din" or "URW DIN"
@@ -69,7 +79,7 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ activeFilters, highlightedItems, 
         setSvgContent(updatedText);
       })
       .catch(error => console.error('Error loading SVG:', error));
-  }, []);
+  }, [showLocations]);
 
   // Helper function to determine element category from SVG group hierarchy
   const getElementCategory = (element: SVGElement): 'FP' | 'FW' | null => {
@@ -431,6 +441,15 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ activeFilters, highlightedItems, 
         >
           ⌂
         </button>
+        {onToggleLocations && (
+          <button
+            onClick={onToggleLocations}
+            className="w-10 h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 flex items-center justify-center"
+            title={showLocations ? "Hide Locations (Collapsed View)" : "Show Locations (Detailed View)"}
+          >
+            {showLocations ? <MapPin className="w-5 h-5" /> : <Map className="w-5 h-5" />}
+          </button>
+        )}
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import SVGViewer from '../SVGViewer';
 import StackView from '../StackView';
 import FilterPanel from '../FilterPanel';
 import StatusChartsSection from '../StatusChartsSection';
+import DamageSummaryGrid from '../DamageSummaryGrid';
 import { FilterType } from '../../data/nuclearData';
 import { loadFacilityData, FacilityData } from '../../utils/csvLoader';
 
@@ -18,9 +19,16 @@ type ViewMode = 'flowchart' | 'stack';
 interface NuclearVisualizationProps {
   isExpanded?: boolean;
   onToggleExpand?: () => void;
+  showLocations?: boolean;
+  onToggleLocations?: () => void;
 }
 
-function NuclearVisualization({ isExpanded = false, onToggleExpand }: NuclearVisualizationProps) {
+function NuclearVisualization({ 
+  isExpanded = false, 
+  onToggleExpand,
+  showLocations = true,
+  onToggleLocations
+}: NuclearVisualizationProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('flowchart');
   const [activeFilters, setActiveFilters] = useState<FilterType[]>(['all']);
   const [highlightedItems, setHighlightedItems] = useState<string[]>([]);
@@ -185,6 +193,8 @@ function NuclearVisualization({ isExpanded = false, onToggleExpand }: NuclearVis
               activeFilters={activeFilters}
               highlightedItems={highlightedItems}
               onItemClick={handleItemClick}
+              showLocations={showLocations}
+              onToggleLocations={onToggleLocations}
             />
           ) : (
             <StackView
@@ -205,6 +215,7 @@ function NuclearVisualization({ isExpanded = false, onToggleExpand }: NuclearVis
 export function NuclearFlowchartPage() {
   const [isVisualizationExpanded, setIsVisualizationExpanded] = useState(false);
   const [facilityData, setFacilityData] = useState<FacilityData[]>([]);
+  const [showLocations, setShowLocations] = useState(true);
 
   // Load facility data
   useEffect(() => {
@@ -217,6 +228,10 @@ export function NuclearFlowchartPage() {
     setIsVisualizationExpanded(!isVisualizationExpanded);
   };
 
+  const toggleLocations = () => {
+    setShowLocations(!showLocations);
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Navigation />
@@ -227,7 +242,10 @@ export function NuclearFlowchartPage() {
       
       {/* Status Charts Section - Between text and visualization */}
       {!isVisualizationExpanded && (
-        <StatusChartsSection facilityData={facilityData} />
+        <>
+          <StatusChartsSection facilityData={facilityData} />
+          <DamageSummaryGrid facilityData={facilityData} />
+        </>
       )}
       
       {/* Interactive Visualization Section */}
@@ -236,6 +254,8 @@ export function NuclearFlowchartPage() {
         <NuclearVisualization 
           isExpanded={isVisualizationExpanded}
           onToggleExpand={toggleVisualizationExpand}
+          showLocations={showLocations}
+          onToggleLocations={toggleLocations}
         />
       </div>
 
