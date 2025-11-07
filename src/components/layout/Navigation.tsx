@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
+import { HelpCircle } from 'lucide-react';
 
-export function Navigation() {
+interface NavigationProps {
+  onHelpClick?: () => void;
+}
+
+export function Navigation({ onHelpClick }: NavigationProps = {}) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showTitle, setShowTitle] = useState(false);
 
@@ -38,6 +43,17 @@ export function Navigation() {
           Post-Strike Assessment: Israeli and U.S. Strikes Caused Major Bottlenecks in Iran's Nuclear Weapons Supply Chain
         </span>
       </div>
+      
+      {onHelpClick && (
+        <button
+          onClick={onHelpClick}
+          className="ml-auto flex items-center gap-2 px-4 py-2 text-white hover:bg-white/10 rounded-lg transition-colors"
+          title="Show tutorial"
+        >
+          <HelpCircle className="w-5 h-5" />
+          <span className="text-sm font-medium">Help</span>
+        </button>
+      )}
     </nav>
   );
 }

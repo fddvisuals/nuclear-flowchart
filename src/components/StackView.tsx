@@ -1,254 +1,92 @@
-import React, { useMemo } from 'react';
-import { FilterType, statusColors, StatusType } from '../data/nuclearData';
+import React, { useMemo, useCallback } from 'react';
+import { FilterType } from '../data/nuclearData';
 import { FacilityData } from '../utils/csvLoader';
+import {
+  buildSystemGroups,
+  getStatusMeta,
+  SystemGroup,
+} from '../utils/systemSummary';
 
 interface StackViewProps {
   activeFilters: FilterType[];
   highlightedItems: string[];
   onItemClick: (itemId: string) => void;
-  expandedItems: string[];
-  onToggleExpand: (itemId: string) => void;
   facilityData: FacilityData[];
+  focusedSystemIds?: string[];
 }
 
-const StackView: React.FC<StackViewProps> = ({ 
-  activeFilters, 
+const StackView: React.FC<StackViewProps> = ({
+  activeFilters,
   highlightedItems,
   onItemClick,
-  expandedItems: _expandedItems,
-  onToggleExpand: _onToggleExpand,
-  facilityData
+  facilityData,
+  focusedSystemIds,
 }) => {
-  // Group CSV data by Main-Category and Sub-Category
-  const groupedData = useMemo(() => {
-    const groups: {
-      [mainCategory: string]: {
-        [subCategory: string]: FacilityData[]
+  const shouldShowFacility = useCallback(
+    (facility: FacilityData): boolean => {
+      if (activeFilters.includes('all')) {
+        return true;
       }
-    } = {};
 
-    facilityData.forEach(facility => {
-      const mainCat = facility['Main-Category'] || 'Unknown';
-      const subCat = facility['Sub-Category'] || 'Unknown';
+      const mainCategory = facility['Main-Category'] ?? '';
+      const statusKey = getStatusMeta(facility.Sub_Item_Status).key;
 
-      if (!groups[mainCat]) {
-        groups[mainCat] = {};
+      const categoryMatches =
+        (activeFilters.includes('fuel-production') && mainCategory === 'Fuel Production') ||
+        (activeFilters.includes('fuel-weaponization') && mainCategory === 'Fuel Weaponization');
+
+      const statusFilters = activeFilters.filter((filter): filter is FilterType =>
+        ['operational', 'destroyed', 'unknown', 'construction', 'likely-destroyed'].includes(filter)
+      );
+
+      const statusMatches =
+        statusFilters.length === 0 || statusFilters.includes(statusKey as FilterType);
+
+      const hasCategoryFilters =
+        activeFilters.includes('fuel-production') ||
+        activeFilters.includes('fuel-weaponization');
+
+      if (hasCategoryFilters && statusFilters.length > 0) {
+        return categoryMatches && statusMatches;
       }
-      if (!groups[mainCat][subCat]) {
-        groups[mainCat][subCat] = [];
+
+      if (hasCategoryFilters) {
+        return categoryMatches;
       }
-      groups[mainCat][subCat].push(facility);
-    });
 
-    return groups;
-  }, [facilityData]);
-
-  // Normalize status from CSV to match filter types
-  const normalizeStatus = (status: string): StatusType => {
-    const statusLower = status?.toLowerCase() || '';
-    
-    if (statusLower.includes('likely') && statusLower.includes('destroyed')) {
-      return 'likely-destroyed';
-    }
-    if (statusLower.includes('destroyed') && !statusLower.includes('likely')) {
-      return 'destroyed';
-    }
-    if (statusLower.includes('construction') || statusLower.includes('under construction')) {
-      return 'construction';
-    }
-    if (statusLower.includes('operational') && !statusLower.includes('non-operational')) {
-      return 'operational';
-    }
-    return 'unknown';
-  };
-
-  // Check if a facility should be shown based on active filters
-  const shouldShowFacility = (facility: FacilityData): boolean => {
-    if (activeFilters.includes('all')) return true;
-
-    const mainCategory = facility['Main-Category'];
-    const status = normalizeStatus(facility.Sub_Item_Status || '');
-
-    // Check category filters
-    const categoryMatches = 
-      (activeFilters.includes('fuel-production') && mainCategory === 'Fuel Production') ||
-      (activeFilters.includes('fuel-weaponization') && mainCategory === 'Fuel Weaponization');
-
-    // Check status filters
-    const statusFilters = activeFilters.filter(f => 
-      ['operational', 'destroyed', 'unknown', 'construction', 'likely-destroyed'].includes(f)
-    );
-
-    const statusMatches = statusFilters.length === 0 || statusFilters.includes(status as FilterType);
-
-    // If both category and status filters exist, both must match
-    const hasCategoryFilters = activeFilters.includes('fuel-production') || activeFilters.includes('fuel-weaponization');
-    
-    if (hasCategoryFilters && statusFilters.length > 0) {
-      return categoryMatches && statusMatches;
-    }
-    
-    if (hasCategoryFilters) {
-      return categoryMatches;
-    }
-    
-    if (statusFilters.length > 0) {
-      return statusMatches;
-    }
-
-    return false;
-  };
-
-  // Filter facilities based on active filters
-  const filteredData = useMemo(() => {
-    const filtered: {
-      [mainCategory: string]: {
-        [subCategory: string]: FacilityData[]
+      if (statusFilters.length > 0) {
+        return statusMatches;
       }
-    } = {};
 
-    Object.keys(groupedData).forEach(mainCat => {
-      Object.keys(groupedData[mainCat]).forEach(subCat => {
-        const facilities = groupedData[mainCat][subCat].filter(shouldShowFacility);
-        
-        if (facilities.length > 0) {
-          if (!filtered[mainCat]) {
-            filtered[mainCat] = {};
-          }
-          filtered[mainCat][subCat] = facilities;
-        }
-      });
-    });
+      return false;
+    },
+    [activeFilters]
+  );
 
-    return filtered;
-  }, [groupedData, activeFilters]);
+  const filteredFacilities = useMemo(() => {
+    if (!facilityData || facilityData.length === 0) {
+      return [];
+    }
 
-  // Render individual facility item
-  const renderFacility = (facility: FacilityData) => {
-    const status = normalizeStatus(facility.Sub_Item_Status || '');
-    const isHighlighted = highlightedItems.includes(facility.Item_Id);
+    if (activeFilters.includes('all')) {
+      return facilityData;
+    }
 
-    return (
-      <div 
-        key={facility.Item_Id}
-        className={`group relative py-3 px-4 hover:bg-gradient-to-r hover:from-white hover:to-slate-50/50 rounded-lg transition-all duration-300 border border-transparent hover:border-slate-200/50 hover:shadow-sm cursor-pointer ${
-          isHighlighted ? 'bg-blue-50 border-blue-200' : ''
-        }`}
-        onClick={() => onItemClick(facility.Item_Id)}
-      >
-        <div className="flex items-start justify-between">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 mb-1">
-              <div 
-                className="w-3 h-3 rounded-full shadow-inner flex-shrink-0"
-                style={{ backgroundColor: statusColors[status] }}
-              />
-              <h4 className="font-medium text-slate-800 text-sm leading-tight truncate">
-                {facility.Locations || facility.Sub_Item || 'Unknown Location'}
-              </h4>
-            </div>
-            {facility.Sub_Item && facility.Sub_Item !== facility.Locations && (
-              <p className="text-xs text-slate-600 ml-6 truncate">{facility.Sub_Item}</p>
-            )}
-          </div>
-          <span className="ml-3 flex-shrink-0">
-            <div 
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: statusColors[status] }}
-            />
-          </span>
-        </div>
-      </div>
-    );
-  };
+    return facilityData.filter(shouldShowFacility);
+  }, [facilityData, activeFilters, shouldShowFacility]);
 
-  // Render sub-category group
-  const renderSubCategory = (mainCat: string, subCat: string, facilities: FacilityData[]) => {
-    // Count facilities by status
-    const statusCounts: Record<string, number> = {};
-    facilities.forEach(facility => {
-      const status = normalizeStatus(facility.Sub_Item_Status || '');
-      statusCounts[status] = (statusCounts[status] || 0) + 1;
-    });
+  const groupedSystems = useMemo<SystemGroup[]>(() => {
+    if (!filteredFacilities || filteredFacilities.length === 0) {
+      return [];
+    }
 
-    return (
-      <div key={`${mainCat}-${subCat}`} className="mb-6">
-        <div className="bg-gradient-to-r from-slate-100 to-slate-50 rounded-lg p-4 mb-3 border border-slate-200/50">
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-slate-900 text-base mb-2 leading-tight">
-                {subCat}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(statusCounts).map(([status, count]) => (
-                  <div 
-                    key={status}
-                    className="inline-flex items-center gap-1.5 px-2 py-1 bg-white rounded-md border border-slate-200/50"
-                  >
-                    <div 
-                      className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: statusColors[status as StatusType] }}
-                    />
-                    <span className="text-xs text-slate-700 font-medium">
-                      {count} {status.replace('-', ' ')}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <span className="ml-3 px-3 py-1 bg-white rounded-full text-sm font-semibold text-slate-700 border border-slate-200/50 flex-shrink-0">
-              {facilities.length}
-            </span>
-          </div>
-        </div>
-        <div className="space-y-1 pl-2">
-          {facilities.map(facility => renderFacility(facility))}
-        </div>
-      </div>
-    );
-  };
+    return buildSystemGroups(filteredFacilities);
+  }, [filteredFacilities]);
 
-  // Render main category (Fuel Production or Fuel Weaponization)
-  const renderMainCategory = (mainCat: string) => {
-    const subCategories = filteredData[mainCat];
-    if (!subCategories || Object.keys(subCategories).length === 0) return null;
-
-    const totalFacilities = Object.values(subCategories).reduce(
-      (sum, facilities) => sum + facilities.length, 
-      0
-    );
-
-    const categoryColor = mainCat === 'Fuel Production' ? '#00558C' : '#000000';
-
-    return (
-      <div key={mainCat} className="space-y-4">
-        <div 
-          className="sticky top-0 z-10 py-4 px-5 rounded-xl border-2 shadow-md"
-          style={{ 
-            backgroundColor: categoryColor,
-            borderColor: categoryColor 
-          }}
-        >
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white tracking-tight">
-              {mainCat}
-            </h2>
-            <span className="px-4 py-1.5 bg-white/90 backdrop-blur-sm rounded-full text-sm font-bold shadow-sm" style={{ color: categoryColor }}>
-              {totalFacilities} facilities
-            </span>
-          </div>
-        </div>
-        {Object.entries(subCategories).map(([subCat, facilities]) => 
-          renderSubCategory(mainCat, subCat, facilities)
-        )}
-      </div>
-    );
-  };
-
-  if (facilityData.length === 0) {
+  if (!facilityData || facilityData.length === 0) {
     return (
       <div className="w-full h-full bg-gray-50 p-6 overflow-y-auto">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">Loading facility data...</p>
           </div>
@@ -257,27 +95,142 @@ const StackView: React.FC<StackViewProps> = ({
     );
   }
 
-  return (
-    <div className="w-full h-full bg-gray-50 p-6 overflow-y-auto">
-      <div className="max-w-4xl mx-auto">
-        {Object.keys(filteredData).length === 0 ? (
+  if (groupedSystems.length === 0) {
+    return (
+      <div className="w-full h-full bg-gray-50 p-6 overflow-y-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">No facilities match the current filters</p>
             <p className="text-gray-400 text-sm mt-2">Try adjusting your filter selection</p>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Fuel Production Column */}
-            <div className="space-y-8">
-              {filteredData['Fuel Production'] && renderMainCategory('Fuel Production')}
-            </div>
-            
-            {/* Fuel Weaponization Column */}
-            <div className="space-y-8">
-              {filteredData['Fuel Weaponization'] && renderMainCategory('Fuel Weaponization')}
-            </div>
+        </div>
+      </div>
+    );
+  }
+
+  const hasFocus = Boolean(focusedSystemIds && focusedSystemIds.length > 0);
+
+  const displaySystems = useMemo(() => {
+    if (!hasFocus || !focusedSystemIds || focusedSystemIds.length === 0) {
+      return groupedSystems;
+    }
+
+    const focusSet = new Set(focusedSystemIds);
+    return groupedSystems.filter((system) => focusSet.has(system.id));
+  }, [groupedSystems, focusedSystemIds, hasFocus]);
+
+  if (displaySystems.length === 0) {
+    return (
+      <div className="w-full h-full bg-gray-50 p-6 overflow-y-auto">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No systems match the current strike selection</p>
+            <p className="text-gray-400 text-sm mt-2">Clear the strike focus to return to the full matrix.</p>
           </div>
-        )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full h-full bg-gray-50 p-6 overflow-y-auto">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex items-baseline justify-between mb-6">
+          <div>
+            <h3 className="text-2xl font-bold text-gray-900">System-Level Damage Summary</h3>
+            <p className="text-sm text-gray-600 mt-1">
+              Color-coded cells show current status at each location. Hover to inspect details; click a cell to toggle related highlights in the flowchart.
+            </p>
+          </div>
+          <div className="text-xs text-gray-500">
+            {hasFocus
+              ? `${displaySystems.length} of ${groupedSystems.length} systems`
+              : `${groupedSystems.length} systems`}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {displaySystems.map((system) => {
+            const totalLocations = system.locations.length;
+            const isHighlightedGroup = system.locations.some((location) =>
+              highlightedItems.includes(location.facilityId)
+            );
+
+            const cardClasses = [
+              'bg-white rounded-2xl border p-4 flex flex-col transition-all',
+              isHighlightedGroup
+                ? 'border-blue-500 shadow-lg ring-1 ring-blue-200'
+                : 'border-gray-200 shadow-sm hover:shadow-md',
+            ].join(' ');
+
+            return (
+              <div key={system.id} className={cardClasses}>
+                <div className="flex items-start justify-between gap-2 mb-3">
+                  <div className="space-y-0.5 flex-1 min-w-0">
+                    <p className="text-[10px] uppercase tracking-wide font-semibold text-gray-500">
+                      {system.mainCategory}
+                    </p>
+                    <h3 className="text-sm font-semibold text-gray-900 leading-tight line-clamp-2">
+                      {system.name}
+                    </h3>
+                  </div>
+                  <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-gray-100 text-gray-700 whitespace-nowrap flex-shrink-0">
+                    {totalLocations}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-12 gap-1 content-start">
+                  {system.locations.map((location) => {
+                    const tooltipLabel = `${location.locationName}${
+                      location.detailName ? ` • ${location.detailName}` : ''
+                    } • ${location.statusText}`;
+                    const isHighlighted = highlightedItems.includes(location.facilityId);
+
+                    const chipClasses = [
+                      'relative w-4 h-4 rounded-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500',
+                      isHighlighted
+                        ? 'ring-2 ring-offset-1 ring-blue-500 scale-110 z-10'
+                        : 'hover:scale-125 hover:ring-2 hover:ring-offset-1 hover:ring-blue-500 hover:z-10',
+                    ].join(' ');
+
+                    return (
+                      <div key={location.id} className="relative group">
+                        <button
+                          type="button"
+                          onClick={() => onItemClick(location.facilityId)}
+                          aria-label={tooltipLabel}
+                          className={chipClasses}
+                          style={{ backgroundColor: location.statusMeta.color }}
+                        />
+                        <span className="pointer-events-none absolute left-1/2 top-full hidden h-2 w-2 -translate-x-1/2 -translate-y-1 rotate-45 border border-slate-700 border-t-0 border-l-0 bg-slate-900 shadow-lg group-hover:block group-focus-within:block" />
+                        <div className="pointer-events-none absolute left-1/2 top-full z-30 hidden w-52 -translate-x-1/2 translate-y-2 rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-[11px] text-slate-100 shadow-xl group-hover:flex group-focus-within:flex flex-col gap-1">
+                          <span className="text-xs font-semibold text-white leading-tight">
+                            {location.locationName}
+                          </span>
+                          {location.detailName && (
+                            <span className="text-[10px] text-slate-300 leading-tight">
+                              {location.detailName}
+                            </span>
+                          )}
+                          <div className="mt-1 flex items-center justify-between gap-2 text-[10px]">
+                            <span className="text-slate-400">Status</span>
+                            <span className="inline-flex items-center gap-1 font-semibold text-white">
+                              <span
+                                className="h-2 w-2 rounded-full border border-white/20"
+                                style={{ backgroundColor: location.statusMeta.color }}
+                              />
+                              {location.statusText}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

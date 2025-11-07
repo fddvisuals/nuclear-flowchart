@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { MapPin, Map } from 'lucide-react';
 import { FilterType } from '../data/nuclearData';
 import { loadFacilityData, FacilityData, getFacilityById } from '../utils/csvLoader';
 
@@ -8,7 +7,7 @@ interface SVGViewerProps {
   highlightedItems: string[];
   onItemClick: (itemId: string) => void;
   showLocations?: boolean;
-  onToggleLocations?: () => void;
+  focusedFacilityIds?: string[];
 }
 
 const SVGViewer: React.FC<SVGViewerProps> = ({ 
@@ -16,7 +15,7 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
   highlightedItems, 
   onItemClick,
   showLocations = true,
-  onToggleLocations
+  focusedFacilityIds = []
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [svgContent, setSvgContent] = useState<string>('');
@@ -247,6 +246,12 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
           // Element should show if both category and status match
           shouldShow = categoryMatch && statusMatch;
         }
+
+        const matchesFocus = focusedFacilityIds.length === 0
+          ? true
+          : Boolean(facility && focusedFacilityIds.includes(facility.Item_Id));
+
+        shouldShow = shouldShow && matchesFocus;
         
         // If this element should be shown, also mark its main text box for highlighting
         if (shouldShow && status) {
@@ -260,7 +265,11 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
         el.style.opacity = shouldShow ? '1' : '0.1';
 
         // Highlighting - use Item_Id for highlighting if facility data is available
-        if (facility && highlightedItems.includes(facility.Item_Id)) {
+        const isHighlighted = facility
+          ? highlightedItems.includes(facility.Item_Id) || focusedFacilityIds.includes(facility.Item_Id)
+          : false;
+
+        if (isHighlighted) {
           el.style.stroke = '#FF6B35';
           el.style.strokeWidth = '3';
           el.style.filter = 'drop-shadow(0 0 8px rgba(255, 107, 53, 0.8))';
@@ -279,7 +288,7 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [activeFilters, highlightedItems, facilityData, svgContent]);
+  }, [activeFilters, highlightedItems, focusedFacilityIds, facilityData, svgContent]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     // Start dragging (click handling is done via event listeners in useEffect)
@@ -313,7 +322,7 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
     setIsDragging(false);
   }, []);
 
-  const handleWheel = useCallback((e: React.WheelEvent) => {
+  const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
     
     const rect = containerRef.current?.getBoundingClientRect();
@@ -335,6 +344,18 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
       scale: newScale
     });
   }, [transform]);
+
+  // Add native wheel event listener with passive: false
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      container.removeEventListener('wheel', handleWheel);
+    };
+  }, [handleWheel]);
 
   // Center and scale SVG to fit container
   useEffect(() => {
@@ -405,7 +426,6 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
-      onWheel={handleWheel}
     >
       {svgContent ? (
         <div
@@ -441,15 +461,6 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
         >
           ⌂
         </button>
-        {onToggleLocations && (
-          <button
-            onClick={onToggleLocations}
-            className="w-10 h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 flex items-center justify-center"
-            title={showLocations ? "Hide Locations (Collapsed View)" : "Show Locations (Detailed View)"}
-          >
-            {showLocations ? <MapPin className="w-5 h-5" /> : <Map className="w-5 h-5" />}
-          </button>
-        )}
       </div>
     </div>
   );

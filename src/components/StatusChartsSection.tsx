@@ -1,211 +1,322 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { BarChart3 } from 'lucide-react';
 import { FacilityData } from '../utils/csvLoader';
+import { FilterType } from '../data/nuclearData';
 
 interface StatusChartsSectionProps {
   facilityData: FacilityData[];
+  externalFilters?: FilterType[];
 }
 
-type CategoryFilter = 'all' | 'fuel-production' | 'fuel-weaponization';
+type StatusKey = 'destroyed' | 'likely-destroyed' | 'construction' | 'operational' | 'unknown';
 
-const StatusChartsSection: React.FC<StatusChartsSectionProps> = ({ facilityData }) => {
-  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all');
+interface StatusDefinition {
+  key: StatusKey;
+  label: string;
+  color: string;
+  accent: string;
+  description: string;
+}
 
-  // Calculate status counts based on the selected category filter
-  const statusData = useMemo(() => {
-    // Return empty data if no facilities loaded yet
+interface WaffleTile {
+  id: string;
+  statusKey: StatusKey;
+  label: string;
+  mainCategory: string;
+  subCategory: string;
+  rawStatus: string;
+}
+
+function lightenHex(hex: string, ratio: number): string {
+  const sanitized = hex.replace('#', '');
+  if (sanitized.length !== 6) {
+    return hex;
+  }
+
+  const r = parseInt(sanitized.slice(0, 2), 16);
+  const g = parseInt(sanitized.slice(2, 4), 16);
+  const b = parseInt(sanitized.slice(4, 6), 16);
+
+  const mix = (channel: number) => Math.round(channel + (255 - channel) * ratio);
+
+  return `#${[mix(r), mix(g), mix(b)]
+    .map((channel) => channel.toString(16).padStart(2, '0'))
+    .join('')}`;
+}
+
+const STATUS_DEFINITIONS: StatusDefinition[] = [
+  {
+    key: 'destroyed',
+    label: 'Destroyed',
+    color: '#f77d70',
+    accent: lightenHex('#f77d70', 0.18),
+    description: 'Facilities assessed as destroyed.',
+  },
+  {
+    key: 'likely-destroyed',
+    label: 'Likely Destroyed',
+    color: '#faba73',
+    accent: lightenHex('#faba73', 0.2),
+    description: 'Sites with high-confidence strike assessments.',
+  },
+  {
+    key: 'construction',
+    label: 'Under Construction',
+    color: '#c7afff',
+    accent: lightenHex('#c7afff', 0.22),
+    description: 'Projects in-progress or undergoing expansion.',
+  },
+  {
+    key: 'operational',
+    label: 'Operational',
+    color: '#5fcf7f',
+    accent: lightenHex('#5fcf7f', 0.16),
+    description: 'Facilities currently active or producing output.',
+  },
+  {
+    key: 'unknown',
+    label: 'Unknown',
+    color: '#84b6f4',
+    accent: lightenHex('#84b6f4', 0.24),
+    description: 'Status undetermined or data unavailable.',
+  },
+];
+
+const STATUS_ORDER = STATUS_DEFINITIONS.map((definition) => definition.key);
+
+const STATUS_LOOKUP = STATUS_DEFINITIONS.reduce<Record<StatusKey, StatusDefinition>>((acc, definition) => {
+  acc[definition.key] = definition;
+  return acc;
+}, {} as Record<StatusKey, StatusDefinition>);
+
+function resolveStatusKey(facility: FacilityData): StatusKey {
+  const status = (facility.Sub_Item_Status || facility.status || '').toLowerCase();
+
+  if (status.includes('likely') && status.includes('destroyed')) {
+    return 'likely-destroyed';
+  }
+
+  if (status.includes('destroyed')) {
+    return 'destroyed';
+  }
+
+  if (status.includes('construction') || status.includes('under construction')) {
+    return 'construction';
+  }
+
+  if (status.includes('operational') && !status.includes('non-operational')) {
+    return 'operational';
+  }
+
+  return 'unknown';
+}
+
+const StatusChartsSection: React.FC<StatusChartsSectionProps> = ({ facilityData, externalFilters }) => {
+  const [activeStatuses, setActiveStatuses] = useState<StatusKey[]>(() => STATUS_ORDER.slice());
+
+  // Sync with external filters when they change
+  useEffect(() => {
+    if (!externalFilters || externalFilters.length === 0 || externalFilters.includes('all')) {
+      setActiveStatuses(STATUS_ORDER.slice());
+      return;
+    }
+
+    // Handle status filters
+    const statusFiltersInExternal = externalFilters.filter(f => 
+      STATUS_ORDER.includes(f as StatusKey)
+    ) as StatusKey[];
+
+    if (statusFiltersInExternal.length > 0) {
+      setActiveStatuses(statusFiltersInExternal);
+    }
+  }, [externalFilters]);
+
+  // Create chart model for a specific category
+  const createChartModel = (categoryType: 'fuel-production' | 'fuel-weaponization') => {
     if (!facilityData || facilityData.length === 0) {
       return {
-        statusCounts: [],
+        tiles: [] as WaffleTile[],
+        statusSummary: STATUS_DEFINITIONS.map((definition) => ({
+          ...definition,
+          count: 0,
+          percentage: 0,
+        })),
         totalCount: 0,
       };
     }
 
-    console.log('=== StatusChartsSection Filtering ===');
-    console.log('Total facility data:', facilityData.length);
-    console.log('Category filter:', categoryFilter);
-    console.log('Sample facility:', facilityData[0]);
-    console.log('Sample Main-Category:', facilityData[0]?.['Main-Category']);
-    
-    // Filter facilities based on category
-    const filteredFacilities = facilityData.filter(facility => {
-      const mainCategory = facility['Main-Category'];
-      
-      if (categoryFilter === 'all') {
-        console.log('Accepting all:', mainCategory);
-        return true;
+    const filteredFacilities = facilityData.filter((facility) => {
+      const mainCategory = facility['Main-Category']?.toLowerCase() ?? '';
+
+      if (categoryType === 'fuel-production') {
+        return mainCategory.includes('fuel production');
+      } else {
+        return mainCategory.includes('weaponization');
       }
-      if (categoryFilter === 'fuel-production') {
-        const match = mainCategory === 'Fuel Production';
-        console.log(`Checking fuel-production: "${mainCategory}" === "Fuel Production"?`, match);
-        return match;
-      }
-      if (categoryFilter === 'fuel-weaponization') {
-        const match = mainCategory === 'Fuel Weaponization';
-        console.log(`Checking fuel-weaponization: "${mainCategory}" === "Fuel Weaponization"?`, match);
-        return match;
-      }
-      return true;
     });
 
-    console.log('Filtered facilities count:', filteredFacilities.length);
-    console.log('Expected: FP=36, FW=18, All=54');
-
-    // Count by status
-    const statusCounts = {
-      operational: 0,
+    const counts: Record<StatusKey, number> = {
       destroyed: 0,
-      unknown: 0,
       'likely-destroyed': 0,
       construction: 0,
+      operational: 0,
+      unknown: 0,
     };
 
-    filteredFacilities.forEach(facility => {
-      const status = facility.Sub_Item_Status?.toLowerCase() || facility.status?.toLowerCase() || 'unknown';
-      console.log('Facility status:', status);
-      
-      // Check for "likely destroyed" first (most specific)
-      if (status.includes('likely') && status.includes('destroyed')) {
-        statusCounts['likely-destroyed']++;
-      }
-      // Check for "destroyed" (but not "likely destroyed")
-      else if (status.includes('destroyed') && !status.includes('likely')) {
-        statusCounts.destroyed++;
-      }
-      // Check for construction
-      else if (status.includes('construction') || status.includes('under construction')) {
-        statusCounts.construction++;
-      }
-      // Check for operational (but NOT "non-operational")
-      else if (status.includes('operational') && !status.includes('non-operational')) {
-        statusCounts.operational++;
-      }
-      // Everything else is unknown (including "unknown/non-operational")
-      else {
-        statusCounts.unknown++;
-      }
+    const tiles: WaffleTile[] = filteredFacilities.map((facility, index) => {
+      const statusKey = resolveStatusKey(facility);
+      counts[statusKey] += 1;
+
+      return {
+        id: facility.Item_Id || `facility-${index}`,
+        statusKey,
+        label: facility.Sub_Item?.trim() || facility.Locations?.trim() || 'Unnamed site',
+        mainCategory: facility['Main-Category'] || 'Unknown category',
+        subCategory: facility['Sub-Category'] || 'Unspecified stream',
+        rawStatus: facility.Sub_Item_Status || facility.status || 'Unknown status',
+      };
     });
 
-    console.log('Status counts:', statusCounts);
+    tiles.sort(
+      (a, b) => STATUS_ORDER.indexOf(a.statusKey) - STATUS_ORDER.indexOf(b.statusKey)
+    );
 
-    const totalCount = filteredFacilities.length;
+    const totalCount = tiles.length;
+    const statusSummary = STATUS_DEFINITIONS.map((definition) => {
+      const count = counts[definition.key];
+      return {
+        ...definition,
+        count,
+        percentage: totalCount > 0 ? (count / totalCount) * 100 : 0,
+      };
+    });
 
     return {
-      statusCounts: [
-        { status: 'destroyed', count: statusCounts.destroyed, color: '#FFC7C2', displayName: 'Destroyed' },
-        { status: 'unknown', count: statusCounts.unknown, color: '#BCD8F0', displayName: 'Unknown' },
-        { status: 'operational', count: statusCounts.operational, color: '#9FE2AA', displayName: 'Operational' },
-        { status: 'likely-destroyed', count: statusCounts['likely-destroyed'], color: '#FFE0C2', displayName: 'Likely Destroyed' },
-        { status: 'construction', count: statusCounts.construction, color: '#DCCCFF', displayName: 'Under Construction' },
-      ].filter(item => item.count > 0), // Only show statuses that have facilities
+      tiles,
+      statusSummary,
       totalCount,
     };
-  }, [facilityData, categoryFilter]);
+  };
 
-  const maxCount = Math.max(...statusData.statusCounts.map(s => s.count), 1);
+  const fuelProductionChart = useMemo(() => createChartModel('fuel-production'), [facilityData]);
+  const weaponizationChart = useMemo(() => createChartModel('fuel-weaponization'), [facilityData]);
 
-  // Show loading state if no data (after all hooks are called)
+  const getGridColumns = (totalCount: number) => {
+    if (totalCount > 120) return 12;
+    if (totalCount > 80) return 10;
+    if (totalCount > 60) return 9;
+    if (totalCount > 40) return 8;
+    if (totalCount > 25) return 6;
+    return 5;
+  };
+
+  const baseTileSize = 26;
+  const tileGap = 4;
+
+  const activeStatusSet = useMemo(() => new Set(activeStatuses), [activeStatuses]);
+
+  const renderWaffleChart = (chartData: ReturnType<typeof createChartModel>, title: string, subtitle: string) => {
+    const { tiles, totalCount } = chartData;
+    const gridColumns = getGridColumns(totalCount);
+    
+    const waffleGridStyle: React.CSSProperties = {
+      gridTemplateColumns: `repeat(${gridColumns}, ${baseTileSize}px)`,
+      gridAutoRows: `${baseTileSize}px`,
+      gap: `${tileGap}px`,
+    };
+
+    return (
+      <div className="flex-1 min-w-[400px]">
+        <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+            <p className="text-sm text-gray-600">{subtitle}</p>
+          </div>
+          <div className="text-right">
+            <span className="text-xs uppercase tracking-wide text-gray-500 block">Total Sites</span>
+            <span className="text-3xl font-bold text-gray-900">{totalCount}</span>
+          </div>
+        </div>
+
+        <div className="relative overflow-visible rounded-xl border border-gray-100 bg-gray-50 p-8 flex justify-center">
+          <div className="relative">
+            <div className="grid" style={waffleGridStyle}>
+              {tiles.map((tile, index) => {
+                const definition = STATUS_LOOKUP[tile.statusKey];
+                const isFocused = activeStatusSet.has(tile.statusKey);
+                const opacity = isFocused ? 1 : 0.25;
+
+                return (
+                  <div
+                    key={tile.id || `tile-${index}`}
+                    className="group relative rounded-sm transition-all duration-200 cursor-pointer hover:scale-110 hover:z-10 hover:shadow-lg"
+                    style={{
+                      backgroundColor: definition.color,
+                      opacity,
+                    }}
+                    title={`${tile.label}\nCategory: ${tile.mainCategory}\nStatus: ${definition.label}`}
+                  >
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block z-50 pointer-events-none">
+                      <div className="bg-gray-900 text-white text-xs rounded-lg py-2 px-3 shadow-xl max-w-xs whitespace-normal">
+                        <div className="font-semibold mb-1">{tile.label}</div>
+                        <div className="text-gray-300">Category: {tile.mainCategory}</div>
+                        <div className="text-gray-300">Status: {definition.label}</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {tiles.length === 0 && (
+              <div className="text-center py-12 text-gray-500">
+                No facilities match the current filters.
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (!facilityData || facilityData.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-6 py-12 bg-gray-50">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-xl border shadow-sm p-8">
-            <div className="text-center text-gray-500">Loading facility data...</div>
-          </div>
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-10 text-center text-gray-500">
+          Loading facility data...
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12 bg-gray-50">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <BarChart3 className="w-6 h-6 text-gray-700" />
+    <section className="max-w-7xl mx-auto px-6 py-8">
+      <div className="bg-white">
+        <div className="flex items-center gap-3 mb-8">
+          <BarChart3 className="w-6 h-6 text-gray-700" />
+          <div>
             <h2 className="text-2xl font-bold text-gray-900">Facility Status Overview</h2>
-          </div>
-          
-          {/* Category Filter Buttons */}
-          <div className="flex gap-2">
-            <button
-              onClick={() => setCategoryFilter('all')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                categoryFilter === 'all'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setCategoryFilter('fuel-production')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                categoryFilter === 'fuel-production'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              Fuel Production
-            </button>
-            <button
-              onClick={() => setCategoryFilter('fuel-weaponization')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                categoryFilter === 'fuel-weaponization'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              Fuel Weaponization
-            </button>
+            <p className="text-sm text-gray-600">
+              Waffle charts showing individual facilities by category. Each square represents one facility. Use the sticky filters above to explore different statuses.
+            </p>
           </div>
         </div>
 
-        {/* Status Bar Chart */}
-        <div className="bg-white rounded-xl border shadow-sm p-8">
-          <div className="space-y-4">
-            {statusData.statusCounts.map(({ status, count, color, displayName }) => {
-              const percentage = statusData.totalCount > 0 ? (count / statusData.totalCount) * 100 : 0;
-              const barWidth = maxCount > 0 ? (count / maxCount) * 100 : 0;
-              
-              return (
-                <div key={status} className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-3">
-                      <div 
-                        className="w-5 h-5 rounded border border-gray-300 flex-shrink-0"
-                        style={{ backgroundColor: color }}
-                      />
-                      <span className="font-medium text-gray-800 text-base">{displayName}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-gray-900 font-semibold text-lg">{count}</span>
-                      <span className="text-sm text-gray-500 min-w-[60px] text-right">({percentage.toFixed(1)}%)</span>
-                    </div>
-                  </div>
-                  <div className="w-full bg-gray-100 rounded-full h-3">
-                    <div
-                      className="h-3 rounded-full transition-all duration-500 ease-out"
-                      style={{ 
-                        width: `${barWidth}%`,
-                        backgroundColor: color 
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+        <div className="flex flex-col lg:flex-row gap-8">
+          {renderWaffleChart(
+            fuelProductionChart,
+            'Fuel Production',
+            'Facilities involved in uranium enrichment and fuel cycle'
+          )}
           
-          <div className="mt-6 pt-4 border-t border-gray-200">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700 font-medium text-lg">Total Facilities</span>
-              <span className="text-gray-900 font-bold text-2xl">{statusData.totalCount}</span>
-            </div>
-          </div>
+          {renderWaffleChart(
+            weaponizationChart,
+            'Weaponization',
+            'Facilities involved in weapons development and assembly'
+          )}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

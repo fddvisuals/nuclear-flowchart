@@ -21,11 +21,15 @@ const renderParagraphs = (content: string) => {
 };
 
 export function TextSection({ 
-  content = `Lorem ipsum dolor sit amet finibus donec condimentum. Lectus torquent sit primis si consequat tellus erat tincidunt dictumst. Efficitur porta arcu augue letius lobortis. Velit etiam non ullamcorper condimentum tempus elementum ante justo. Massa dapibus quis nostra dis fringilla ullamcorper aliquam nullam at.
+  content = `
+During the June 2025 strikes against Iran’s nuclear program, Israel and the United States did serious damage to the Islamic Republic’s ability to make nuclear weapons.
 
-Tempor quisque blandit mattis ornare integer lobortis vulputate. Eget elit ornare lobortis dolor aliquam mus vitae est. Justo at nunc tempus laoreet convallis ligula cubilia ultrices orci hac sem. Sodales vestibulum tincidunt sed parturient himenaeos facilisis nam interdum rutrum. Tellus netus viverra fringilla laoreet vivamus amet fusce.
+Prior to the strikes, Tehran was only months from being able to construct nuclear weapons. It possessed the key facilities necessary and had produced enough enriched uranium — if further enriched to weapons-grade — for up to 22 nuclear weapons in five months, with enough ready for 11 weapons within a month. Iran was reportedly working to quicken its ability to weaponize the material and construct the weapons, and had a team of scientists working on various projects in preparation for a final order from Iran’s supreme leader.
 
-Viverra duis litora diam est mus facilisi ex quam faucibus eleifend. Dapibus ligula mauris felis est ultrices pede pretium. Odio elementum risus curabitur finibus hendrerit euismod commodo dictumst. Mi enim eu a felis sagittis vestibulum viverra luctus lobortis. Turpis eget facilisis tellus nostra nulla erat neque id. Efficitur ad etiam amet mi neque consectetuer nunc netus. Dui habitasse ornare purus rutrum fames cubilia porttitor.`,
+While information is still developing, Israel and the United States eliminated or severely damaged at least two centrifuge manufacturing and assembly facilities; two centrifuge testing and development sites; several uranium fuel manufacturing facilities, chiefly for fueling reactors; a facility that converts uranium yellowcake for subsequent enrichment; three uranium enrichment plants; enriched uranium storage locations; and Iran’s route to weapons-grade plutonium via a heavy-water production plant and plutonium-producing reactor. In addition, Israel severely crippled Tehran’s route to weaponization, eliminating not only its known ability to make the necessary weapons-grade uranium metal for the core of a nuclear weapon, but also the administrative centers of the nuclear weapons program; at least 10 facilities related to various weaponization steps; and more than a dozen nuclear scientists.
+
+Iran may seek to recover buried assets and reconstitute its capabilities to build nuclear weapons. Its success will depend on its ability to unstop key bottlenecks, as shown in the visual below.
+`,
   width
 }: TextSectionProps) {
   return (
