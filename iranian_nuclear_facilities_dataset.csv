@@ -1,24 +1,24 @@
 Item_Id,Main-Category,Sub-Category,,Sub_Item,Locations,Sub_Item_Status
 1,Fuel Production,Centrifuge component manufacturing companies,,ID1,Several workshops locations not public,Unknown/Non-operational
 2,Fuel Production,Centrifuge component manufacturing companies,,ID2,Imported components and raw materials,Unknown/Non-operational
-3,Fuel Weaponization,Nuclear warhead assembly,,ID1,Previously under construction at Parchin,Unknown/Non-operational
-4,Fuel Weaponization,Neutron initiator production,,ID1,Unidentified Site,Destroyed
-5,Fuel Weaponization,R&D radiation & explosives,,ID1,Lavisan 2/Mojdeh Site,Destroyed
-6,Fuel Weaponization,R&D radiation & explosives,,ID2,Shahid Shariarti,Destroyed
-7,Fuel Weaponization,Multi-point initiation system plastic explosives precursor manufacturing R&D and testing,,ID1,Taleghan 1 (likely dismantled),Unknown/Non-operational
-8,Fuel Weaponization,Multi-point initiation system plastic explosives precursor manufacturing R&D and testing,,ID2,Taleghan 2 Destroyed in Oct. 2024 Israeli strike,Destroyed
-9,Fuel Weaponization,Multi-point initiation system plastic explosives precursor manufacturing R&D and testing,,ID3,Shahid Meysami,Destroyed
-10,Fuel Weaponization,Multi-point initiation system plastic explosives precursor manufacturing R&D and testing,,ID4,HMX Production,Unknown/Non-operational
-11,Fuel Weaponization,Multi-point initiation system development and testing,,ID1,Sanjarian,Destroyed
-12,Fuel Weaponization,Multi-point initiation system development and testing,,ID2,Shahid Karimi Group/Lavisan 2/Mojdeh Site,Pink/Red with Purple Border
-13,Fuel Weaponization,Multi-point initiation system development and testing,,ID3,Goleb Dareh,Unknown/Non-operational
-14,Fuel Weaponization,Administration personnel nuclear weapons theory & simulation computation modeling design documentation back-up nuclear archive/weap...,,ID1,SPND Headquarters Tehran,Destroyed
-15,Fuel Weaponization,Administration personnel nuclear weapons theory & simulation computation modeling design documentation back-up nuclear archive/weap...,,ID2,Former SPND HQ: Lavisan 2/Mojdeh Building,Destroyed
-16,Fuel Weaponization,Administration personnel nuclear weapons theory & simulation computation modeling design documentation back-up nuclear archive/weap...,,ID3,Institute of Applied Physics Annex,Destroyed
-17,Fuel Weaponization,Weapons-grade uranium metal (or plutonium) core and component manufacturing,,ID1,Unknown,Unknown/Non-operational
-18,Fuel Weaponization,Lab-scale uranium metal production,,ID1,Esfahan Uranium Metal Conversion Lab,Destroyed
-19,Fuel Weaponization,Lab-scale uranium metal production,,ID2,Esfahan Fuel Plate Manufacturing Plant (FPFP) Uranium Metal Line,Destroyed
-20,Fuel Weaponization,Plutonium reprocessing,,ID1,Unknown to Exist,Unknown/Non-operational
+3,Weaponization,Nuclear warhead assembly,,ID1,Previously under construction at Parchin,Unknown/Non-operational
+4,Weaponization,Neutron initiator production,,ID1,Unidentified Site,Destroyed
+5,Weaponization,R&D radiation & explosives,,ID1,Lavisan 2/Mojdeh Site,Destroyed
+6,Weaponization,R&D radiation & explosives,,ID2,Shahid Shariarti,Destroyed
+7,Weaponization,Multi-point initiation system plastic explosives precursor manufacturing R&D and testing,,ID1,Taleghan 1 (likely dismantled),Unknown/Non-operational
+8,Weaponization,Multi-point initiation system plastic explosives precursor manufacturing R&D and testing,,ID2,Taleghan 2 Destroyed in Oct. 2024 Israeli strike,Destroyed
+9,Weaponization,Multi-point initiation system plastic explosives precursor manufacturing R&D and testing,,ID3,Shahid Meysami,Destroyed
+10,Weaponization,Multi-point initiation system plastic explosives precursor manufacturing R&D and testing,,ID4,HMX Production,Unknown/Non-operational
+11,Weaponization,Multi-point initiation system development and testing,,ID1,Sanjarian,Destroyed
+12,Weaponization,Multi-point initiation system development and testing,,ID2,Shahid Karimi Group/Lavisan 2/Mojdeh Site,Pink/Red with Purple Border
+13,Weaponization,Multi-point initiation system development and testing,,ID3,Goleb Dareh,Unknown/Non-operational
+14,Weaponization,Administration personnel nuclear weapons theory & simulation computation modeling design documentation back-up nuclear archive/weap...,,ID1,SPND Headquarters Tehran,Destroyed
+15,Weaponization,Administration personnel nuclear weapons theory & simulation computation modeling design documentation back-up nuclear archive/weap...,,ID2,Former SPND HQ: Lavisan 2/Mojdeh Building,Destroyed
+16,Weaponization,Administration personnel nuclear weapons theory & simulation computation modeling design documentation back-up nuclear archive/weap...,,ID3,Institute of Applied Physics Annex,Destroyed
+17,Weaponization,Weapons-grade uranium metal (or plutonium) core and component manufacturing,,ID1,Unknown,Unknown/Non-operational
+18,Weaponization,Lab-scale uranium metal production,,ID1,Esfahan Uranium Metal Conversion Lab,Destroyed
+19,Weaponization,Lab-scale uranium metal production,,ID2,Esfahan Fuel Plate Manufacturing Plant (FPFP) Uranium Metal Line,Destroyed
+20,Weaponization,Plutonium reprocessing,,ID1,Unknown to Exist,Unknown/Non-operational
 21,Fuel Production,HEU storage,,ID1,Esfahan Tunnel Complex - Entrances destroyed,Destroyed
 22,Fuel Production,HEU storage,,ID2,Esfahan Shipping and Receiving Building,Destroyed
 23,Fuel Production,Heavy water reactor and plutonium fabrication,,ID1,Khondab (Arak) Under Construction Reactor & Hot Cells/Production Building,Destroyed
