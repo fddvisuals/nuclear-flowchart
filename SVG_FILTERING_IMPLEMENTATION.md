@@ -26,7 +26,7 @@ The SVG has a hierarchical group structure:
   </g>
 </g>
 
-<g id="fw-fuelweaponization-black">    // Main category: Fuel Weaponization (FW) - Black
+<g id="fw-fuelweaponization-black">    // Main category: Weaponization (FW) - Black
   <g id="main1-fw">                     // Subgroup 1
     <g id="destroyed">                  // Status group
       <rect id="Shape_121" ... />       // Individual facility box
@@ -127,10 +127,10 @@ The new filtering logic works as follows:
 
 1. **"All" Filter**: Shows all elements regardless of category or status
 
-2. **Category Filters** (Fuel Production / Fuel Weaponization):
+2. **Category Filters** (Fuel Production / Weaponization):
    - When a category filter is active, only elements within that category's main group are shown
    - Multiple category filters work with OR logic (show if in ANY selected category)
-   - Example: Selecting both "Fuel Production" and "Fuel Weaponization" shows all boxes
+   - Example: Selecting both "Fuel Production" and "Weaponization" shows all boxes
 
 3. **Status Filters** (Operational / Destroyed / Unknown / Construction / Likely Destroyed):
    - When a status filter is active, only elements within matching status groups are shown
@@ -323,7 +323,7 @@ if (hasStatusFilter) {
 
 ### Basic Tests
 1. ✅ Test "Fuel Production" filter alone - should show only blue (FP) boxes
-2. ✅ Test "Fuel Weaponization" filter alone - should show only black (FW) boxes
+2. ✅ Test "Weaponization" filter alone - should show only black (FW) boxes
 3. ✅ Test "Operational" filter alone - should show operational boxes from both categories
 4. ✅ Test "Destroyed" filter alone - should show destroyed boxes from both categories
 5. ✅ Test "Unknown" filter alone - should show unknown boxes from both categories
@@ -331,7 +331,7 @@ if (hasStatusFilter) {
 ### Combined Filter Tests
 6. ✅ Test "Fuel Production + Operational" - should show only operational boxes in FP
 7. ✅ Test "Fuel Production + Destroyed" - should show only destroyed boxes in FP
-8. ✅ Test "Fuel Weaponization + Operational" - should show only operational boxes in FW
+8. ✅ Test "Weaponization + Operational" - should show only operational boxes in FW
 9. ✅ Test multiple status filters together (e.g., "Operational + Destroyed") - should show all matching statuses
 
 ### Edge Cases

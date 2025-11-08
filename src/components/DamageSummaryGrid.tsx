@@ -5,6 +5,24 @@ import { buildSystemSummary, SystemSummaryResult } from '../utils/systemSummary'
 import { IMPACT_CONFIGS } from '../data/impactConfigs';
 import { FilterType } from '../data/nuclearData';
 
+function lightenHexColor(hex: string, ratio: number): string {
+  const sanitized = hex.replace('#', '');
+  if (sanitized.length !== 6) {
+    return hex;
+  }
+
+  const blend = (component: number) =>
+    Math.round(component + (255 - component) * Math.min(Math.max(ratio, 0), 1));
+
+  const r = parseInt(sanitized.slice(0, 2), 16);
+  const g = parseInt(sanitized.slice(2, 4), 16);
+  const b = parseInt(sanitized.slice(4, 6), 16);
+
+  return `#${[blend(r), blend(g), blend(b)]
+    .map((value) => value.toString(16).padStart(2, '0'))
+    .join('')}`;
+}
+
 interface DamageSummaryGridProps {
   facilityData: FacilityData[];
   activeImpactId?: string | null;
@@ -285,7 +303,7 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
             <div>
               <h3 className="text-2xl font-bold text-gray-900">System-Level Damage Summary</h3>
               <p className="text-sm text-gray-600 mt-1">
-                Color-coded cells show current status at each location. Hover to inspect details; select a strategic card above to spotlight the related systems here.
+                Color-coded cells show current status at each location. Hover to inspect details.
               </p>
             </div>
             <div className="text-xs text-gray-500">
@@ -298,11 +316,17 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
               const totalLocations = system.locations.length;
               const isFocusActive = Boolean(activeImpact);
               const isHighlighted = !isFocusActive || activeImpact?.systemIds.includes(system.id);
+              const mainCategory = system.mainCategory?.toLowerCase() ?? '';
+              const categoryBase = mainCategory.includes('weapon') ? '#1E1E1E' : '#00558C';
+              const primaryBorder = lightenHexColor(categoryBase, 0.7);
+              const subtleBorder = lightenHexColor(categoryBase, 0.82);
+              const borderColor = isHighlighted ? primaryBorder : subtleBorder;
+              const borderWidth = isHighlighted ? 3 : 2;
               const cardClasses = [
-                'bg-white rounded-2xl border p-4 flex flex-col transition-all',
+                'bg-white rounded-2xl p-4 flex flex-col transition-all border',
                 isFocusActive && isHighlighted
-                  ? 'border-blue-500 shadow-lg'
-                  : 'border-gray-200 shadow-sm hover:shadow-md',
+                  ? 'shadow-[0_18px_34px_rgba(15,23,42,0.28)]'
+                  : 'shadow-sm hover:shadow-md',
                 isHighlighted ? 'opacity-100' : 'opacity-40',
               ].join(' ');
 
@@ -310,6 +334,13 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
                 <div
                   key={system.id}
                   className={cardClasses}
+                  style={{
+                    borderColor,
+                    borderWidth,
+                    boxShadow: isFocusActive && isHighlighted
+                      ? '0 18px 34px rgba(10, 18, 32, 0.35)'
+                      : '0 10px 24px rgba(15, 23, 42, 0.08)',
+                  }}
                 >
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <div className="space-y-0.5 flex-1 min-w-0">

@@ -297,7 +297,7 @@ const StatusChartsSection: React.FC<StatusChartsSectionProps> = ({ facilityData,
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Facility Status Overview</h2>
             <p className="text-sm text-gray-600">
-              Waffle charts showing individual facilities by category. Each square represents one facility. Use the sticky filters above to explore different statuses.
+              Isometric chart showing individual facilities by category. Each square represents one facility. Use the filters above to explore different statuses.
             </p>
           </div>
         </div>

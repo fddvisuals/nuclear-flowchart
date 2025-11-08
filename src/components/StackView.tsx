@@ -33,7 +33,7 @@ const StackView: React.FC<StackViewProps> = ({
 
       const categoryMatches =
         (activeFilters.includes('fuel-production') && mainCategory === 'Fuel Production') ||
-        (activeFilters.includes('fuel-weaponization') && mainCategory === 'Fuel Weaponization');
+        (activeFilters.includes('fuel-weaponization') && mainCategory === 'Weaponization');
 
       const statusFilters = activeFilters.filter((filter): filter is FilterType =>
         ['operational', 'destroyed', 'unknown', 'construction', 'likely-destroyed'].includes(filter)

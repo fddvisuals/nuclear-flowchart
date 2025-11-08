@@ -301,7 +301,7 @@ export const nuclearData: Stage[] = [
   },
   {
     id: 'fuel-weaponization',
-    name: 'Fuel Weaponization',
+    name: 'Weaponization',
     type: 'fuel-weaponization',
     color: '#1E1E1E',
     components: [
@@ -407,7 +407,7 @@ export type FilterType = 'all' | 'fuel-production' | 'fuel-weaponization' | 'com
 export const filterOptions = [
   { value: 'all' as FilterType, label: 'All Items', color: '#6B7280' },
   { value: 'fuel-production' as FilterType, label: 'Fuel Production', color: '#00558C' },
-  { value: 'fuel-weaponization' as FilterType, label: 'Fuel Weaponization', color: '#1E1E1E' },
+  { value: 'fuel-weaponization' as FilterType, label: 'Weaponization', color: '#1E1E1E' },
   { value: 'components' as FilterType, label: 'Main Components', color: '#059669' },
   { value: 'sub-items' as FilterType, label: 'Sub-Items', color: '#7C3AED' },
   { value: 'standalone' as FilterType, label: 'Standalone', color: '#DC2626' },

@@ -40,7 +40,7 @@ const STATUS_MAPPING = {
 // Category mapping
 const CATEGORY_MAPPING = {
   'Fuel Production': 'Fuel Production',
-  'Fuel Weaponization': 'Fuel Production' // Map weaponization to production for now
+  'Weaponization': 'Fuel Production' // Map weaponization to production for now
 };
 
 function parseIranianCSV(csvContent: string): IranianFacility[] {

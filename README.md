@@ -9,7 +9,7 @@ A comprehensive React + Tailwind CSS application for visualizing Iran's nuclear 
 - **Stack View**: Hierarchical breakdown showing stages → components → sub-items
 
 ### 🎯 Advanced Filtering
-- Filter by **Stage Type**: Fuel Production vs Fuel Weaponization
+- Filter by **Stage Type**: Fuel Production vs Weaponization
 - Filter by **Status**: Operational, Confirmed, Disputed, Unknown, Destroyed, Underground
 - Real-time highlighting and opacity adjustments based on active filters
 
@@ -30,7 +30,7 @@ The application organizes nuclear facilities into two major stages:
 - HEU Storage
 - Fuel Manufacturing
 
-#### Fuel Weaponization (Black #1E1E1E)
+#### Weaponization (Black #1E1E1E)
 - Nuclear Warhead Design & Development
 - Nuclear Warhead Fabrication & Assembly
 - Delivery Systems
