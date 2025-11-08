@@ -1,4 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faMinus, faExpand } from '@fortawesome/free-solid-svg-icons';
 import { FilterType } from '../data/nuclearData';
 import { loadFacilityData, FacilityData, getFacilityById } from '../utils/csvLoader';
 
@@ -357,55 +359,59 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
     };
   }, [handleWheel]);
 
-  // Center and scale SVG to fit container
+  // Function to fit SVG to screen
+  const fitToScreen = useCallback(() => {
+    if (!svgContent || !containerRef.current) return;
+
+    const container = containerRef.current;
+    const svgElement = container.querySelector('svg');
+    if (!svgElement) return;
+    
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
+    
+    // Try to get dimensions from viewBox first, fallback to getBBox
+    let svgWidth, svgHeight;
+    const viewBox = svgElement.getAttribute('viewBox');
+    
+    if (viewBox) {
+      const [, , width, height] = viewBox.split(' ').map(Number);
+      svgWidth = width;
+      svgHeight = height;
+    } else {
+      try {
+        const svgBounds = svgElement.getBBox();
+        svgWidth = svgBounds.width;
+        svgHeight = svgBounds.height;
+      } catch (e) {
+        // Fallback to SVG attributes
+        svgWidth = parseFloat(svgElement.getAttribute('width') || '2247');
+        svgHeight = parseFloat(svgElement.getAttribute('height') || '5174');
+      }
+    }
+    
+    const scaleX = containerWidth / svgWidth;
+    const scaleY = containerHeight / svgHeight;
+    const scale = Math.min(scaleX, scaleY) * 0.95;
+    
+    const x = (containerWidth - svgWidth * scale) / 2;
+    const y = (containerHeight - svgHeight * scale) / 2;
+    
+    setTransform({ x, y, scale });
+  }, [svgContent]);
+
+  // Center and scale SVG to fit container on load
   useEffect(() => {
     if (!svgContent || !containerRef.current) return;
 
     const container = containerRef.current;
-    
-    const updateTransform = () => {
-      const svgElement = container.querySelector('svg');
-      if (!svgElement) return;
-      
-      const containerWidth = container.clientWidth;
-      const containerHeight = container.clientHeight;
-      
-      // Try to get dimensions from viewBox first, fallback to getBBox
-      let svgWidth, svgHeight;
-      const viewBox = svgElement.getAttribute('viewBox');
-      
-      if (viewBox) {
-        const [, , width, height] = viewBox.split(' ').map(Number);
-        svgWidth = width;
-        svgHeight = height;
-      } else {
-        try {
-          const svgBounds = svgElement.getBBox();
-          svgWidth = svgBounds.width;
-          svgHeight = svgBounds.height;
-        } catch (e) {
-          // Fallback to SVG attributes
-          svgWidth = parseFloat(svgElement.getAttribute('width') || '2247');
-          svgHeight = parseFloat(svgElement.getAttribute('height') || '5174');
-        }
-      }
-      
-      const scaleX = containerWidth / svgWidth;
-      const scaleY = containerHeight / svgHeight;
-      const scale = Math.min(scaleX, scaleY) * 0.95;
-      
-      const x = (containerWidth - svgWidth * scale) / 2;
-      const y = (containerHeight - svgHeight * scale) / 2;
-      
-      setTransform({ x, y, scale });
-    };
 
     // Initial update with a delay to ensure DOM is ready
-    const timer = setTimeout(updateTransform, 100);
+    const timer = setTimeout(fitToScreen, 100);
 
     // Watch for container size changes (e.g., when expanding/minimizing)
     const resizeObserver = new ResizeObserver(() => {
-      updateTransform();
+      fitToScreen();
     });
     
     resizeObserver.observe(container);
@@ -414,7 +420,7 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
       clearTimeout(timer);
       resizeObserver.disconnect();
     };
-  }, [svgContent]);
+  }, [svgContent, fitToScreen]);
 
   return (
     <div 
@@ -446,20 +452,23 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
         <button
           onClick={() => setTransform(prev => ({ ...prev, scale: Math.min(5, prev.scale * 1.2) }))}
           className="w-10 h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 flex items-center justify-center text-lg font-bold"
+          title="Zoom In"
         >
-          +
+          <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
         </button>
         <button
           onClick={() => setTransform(prev => ({ ...prev, scale: Math.max(0.1, prev.scale * 0.8) }))}
           className="w-10 h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 flex items-center justify-center text-lg font-bold"
+          title="Zoom Out"
         >
-          −
+          <FontAwesomeIcon icon={faMinus} className="w-4 h-4" />
         </button>
         <button
-          onClick={() => setTransform({ x: 0, y: 0, scale: 1 })}
+          onClick={fitToScreen}
           className="w-10 h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 flex items-center justify-center text-xs font-semibold"
+          title="Fit to Screen"
         >
-          ⌂
+          <FontAwesomeIcon icon={faExpand} className="w-4 h-4" />
         </button>
       </div>
     </div>
