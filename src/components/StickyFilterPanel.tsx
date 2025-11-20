@@ -142,24 +142,22 @@ const StickyFilterPanel: React.FC<StickyFilterPanelProps> = ({
             {categoryFilters.map((option) => {
               const isActive = activeFilters.includes(option.value);
               const base = option.color ?? '#00558C';
-              const backgroundColor = isActive ? base : lightenHex(base, 0.75);
-              const textColor = getReadableTextColor(backgroundColor);
-              const shadowColor = lightenHex(base, 0.25);
+              const backgroundColor = isActive ? base : '#ffffff';
+              const textColor = isActive ? '#ffffff' : '#1e293b';
 
               return (
                 <button
                   key={option.value}
                   onClick={() => handleFilterToggle(option.value)}
-                  className={`px-3.5 py-1.5 text-[12px] font-extrabold tracking-wide uppercase border transition-all rounded-[4px] whitespace-nowrap ${
+                  className={`px-4 py-2 text-[13px] font-bold tracking-wide uppercase border-2 transition-all rounded-md whitespace-nowrap ${
                     isActive
-                      ? 'shadow-[0_4px_14px_rgba(0,0,0,0.18)]'
-                      : 'hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)]'
+                      ? 'shadow-[0_4px_12px_rgba(0,85,140,0.3)]'
+                      : 'hover:shadow-[0_2px_8px_rgba(0,0,0,0.1)] hover:border-opacity-80'
                   }`}
                   style={{
                     backgroundColor,
                     color: textColor,
                     borderColor: base,
-                    boxShadow: isActive ? `0 0 0 1px ${shadowColor}` : undefined
                   }}
                 >
                   {option.label}

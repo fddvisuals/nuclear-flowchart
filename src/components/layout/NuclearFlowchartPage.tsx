@@ -139,7 +139,7 @@ function NuclearVisualization({
         <div 
           ref={flowchartContainerRef}
           className={`relative bg-white border border-gray-100 rounded-xl overflow-hidden ${isExpanded ? 'flex-1 m-6 mt-0' : ''}`}
-          style={{ height: isExpanded ? 'auto' : '700px' }}
+          style={{ height: isExpanded ? 'auto' : '2000px' }}
         >
           <SVGViewer
             activeFilters={activeFilters ?? ['all']}
