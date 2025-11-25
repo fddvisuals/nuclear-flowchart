@@ -19,8 +19,8 @@ Item_Id,Main-Category,Sub-Category,,Sub_Item,Locations,Sub_Item_Status
 18,Weaponization,Lab-scale uranium metal production,,ID1,Esfahan Uranium Metal Conversion Lab,Destroyed
 19,Weaponization,Lab-scale uranium metal production,,ID2,Esfahan Fuel Plate Manufacturing Plant (FPFP) Uranium Metal Line,Destroyed
 20,Weaponization,Plutonium reprocessing,,ID1,Unknown to Exist,Unknown/Non-operational
-21,Fuel Production,HEU storage,,ID1,Esfahan Tunnel Complex - Entrances destroyed,Destroyed
-22,Fuel Production,HEU storage,,ID2,Esfahan Shipping and Receiving Building,Destroyed
+21,Fuel Production,Highly Enriched Uranium storage,,ID1,Esfahan Tunnel Complex - Entrances destroyed,Destroyed
+22,Fuel Production,Highly Enriched Uranium storage,,ID2,Esfahan Shipping and Receiving Building,Destroyed
 23,Fuel Production,Heavy water reactor and plutonium fabrication,,ID1,Khondab (Arak) Under Construction Reactor & Hot Cells/Production Building,Destroyed
 24,Fuel Production,Heavy water reactor and plutonium fabrication,,ID2,Darhovin reactor,Under construction
 25,Fuel Production,Research reactor,,ID1,Tehran Research Reactor (TRR),Known/Operational
