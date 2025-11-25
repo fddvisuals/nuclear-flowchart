@@ -160,7 +160,7 @@ export function NuclearFlowchartPage() {
   const [activeFilters, setActiveFilters] = useState<FilterType[]>(['all']);
   const [isVisualizationExpanded, setIsVisualizationExpanded] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
-  const [activeMainView, setActiveMainView] = useState<'flowchart' | 'stack'>('flowchart');
+  const [activeMainView, setActiveMainView] = useState<'flowchart' | 'stack'>('stack');
 
   // Load facility data
   useEffect(() => {
@@ -241,14 +241,14 @@ export function NuclearFlowchartPage() {
             >
               {[
                 {
-                  id: 'flowchart',
-                  label: 'Flowchart View',
-                  description: 'Interactive Supply Chain Flowchart',
-                },
-                {
                   id: 'stack',
                   label: 'Stack View',
                   description: 'System-Level Damage Summary',
+                },
+                {
+                  id: 'flowchart',
+                  label: 'Flowchart View',
+                  description: 'Interactive Supply Chain Flowchart',
                 },
               ].map((tab) => {
                 const isActive = activeMainView === tab.id;
@@ -257,11 +257,10 @@ export function NuclearFlowchartPage() {
                     key={tab.id}
                     role="tab"
                     aria-selected={isActive}
-                    className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors whitespace-nowrap ${
-                      isActive
+                    className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors whitespace-nowrap ${isActive
                         ? 'bg-white text-blue-900 shadow-sm'
                         : 'text-slate-600 hover:text-slate-900'
-                    }`}
+                      }`}
                     onClick={() => setActiveMainView(tab.id as 'flowchart' | 'stack')}
                   >
                     <span className="block leading-tight">{tab.label}</span>

@@ -359,41 +359,44 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
                           </div>
 
                           <div className="grid grid-cols-12 gap-1 content-start">
-                            {system.locations.map((location) => {
-                              const tooltipLabel = `${location.locationName}${location.detailName ? ` • ${location.detailName}` : ''} • ${location.statusText}`;
+                            {[...system.locations]
+                              .sort((a, b) => {
+                                // Sort by status in the order: destroyed, likely-destroyed, construction, unknown, operational
+                                const statusOrder = ['destroyed', 'likely-destroyed', 'construction', 'unknown', 'operational'];
+                                const indexA = statusOrder.indexOf(a.statusMeta.key);
+                                const indexB = statusOrder.indexOf(b.statusMeta.key);
+                                return indexA - indexB;
+                              })
+                              .map((location) => {
+                                const tooltipLabel = `${location.locationName}${location.detailName ? ` • ${location.detailName}` : ''} • ${location.statusText}`;
 
-                              return (
-                                <div key={location.id} className="relative group">
-                                  <div
-                                    tabIndex={0}
-                                    aria-label={tooltipLabel}
-                                    className="w-4 h-4 rounded-sm cursor-help transition-all hover:scale-125 hover:ring-2 hover:ring-offset-1 hover:ring-blue-500 hover:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 focus-visible:z-10"
-                                    style={{ backgroundColor: location.statusMeta.color }}
-                                  />
-                                  <span className="pointer-events-none absolute left-1/2 top-full hidden h-2 w-2 -translate-x-1/2 -translate-y-1 rotate-45 border border-slate-700 border-t-0 border-l-0 bg-slate-900 shadow-lg group-hover:block group-focus-within:block" />
-                                  <div className="pointer-events-none absolute left-1/2 top-full z-30 hidden w-52 -translate-x-1/2 translate-y-2 rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-[11px] text-slate-100 shadow-xl group-hover:flex group-focus-within:flex flex-col gap-1">
-                                    <span className="text-xs font-semibold text-white leading-tight">
-                                      {location.locationName}
-                                    </span>
-                                    {location.detailName && (
-                                      <span className="text-[10px] text-slate-300 leading-tight">
-                                        {location.detailName}
+                                return (
+                                  <div key={location.id} className="relative group">
+                                    <img
+                                      src={`${import.meta.env.BASE_URL}images/${location.statusMeta.key}.svg`}
+                                      alt={tooltipLabel}
+                                      tabIndex={0}
+                                      className="w-5 h-5 cursor-help transition-all hover:scale-125 hover:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 focus-visible:z-10"
+                                    />
+                                    <span className="pointer-events-none absolute left-1/2 top-full hidden h-2 w-2 -translate-x-1/2 -translate-y-1 rotate-45 border border-slate-700 border-t-0 border-l-0 bg-slate-900 shadow-lg group-hover:block group-focus-within:block" />
+                                    <div className="pointer-events-none absolute left-1/2 top-full z-30 hidden w-64 -translate-x-1/2 translate-y-2 rounded-md border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-100 shadow-xl group-hover:flex group-focus-within:flex flex-col gap-1.5">
+                                      <span className="text-sm font-semibold text-white leading-tight">
+                                        {location.locationName}
                                       </span>
-                                    )}
-                                    <div className="mt-1 flex items-center justify-between gap-2 text-[10px]">
-                                      <span className="text-slate-400">Status</span>
-                                      <span className="inline-flex items-center gap-1 font-semibold text-white">
-                                        <span
-                                          className="h-2 w-2 rounded-full border border-white/20"
-                                          style={{ backgroundColor: location.statusMeta.color }}
-                                        />
-                                        {location.statusText}
-                                      </span>
+                                      <div className="mt-1.5 flex items-center justify-between gap-3 text-xs">
+                                        <span className="text-slate-400">Status</span>
+                                        <span className="inline-flex items-center gap-1.5 font-semibold text-white">
+                                          <span
+                                            className="h-2.5 w-2.5 rounded-full border border-white/20"
+                                            style={{ backgroundColor: location.statusMeta.color }}
+                                          />
+                                          {location.statusText}
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              );
-                            })}
+                                );
+                              })}
                           </div>
                         </div>
                       );

@@ -55,23 +55,29 @@ const StickyFilterPanel: React.FC<StickyFilterPanelProps> = ({
 
     if (targetSections.length === 0) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // Show sticky filter when ANY of the target sections is in view
-        const anyInView = entries.some(entry => entry.isIntersecting);
-        setIsVisible(anyInView);
-      },
-      {
-        // Trigger when the top of the section crosses the top of the viewport (plus nav height)
-        rootMargin: '-75px 0px 0px 0px',
-        threshold: 0,
-      }
-    );
+    // Get the first target section
+    const firstSection = targetSections[0];
 
-    targetSections.forEach(section => observer.observe(section));
+    const handleScroll = () => {
+      if (!firstSection) return;
+
+      const rect = firstSection.getBoundingClientRect();
+      const navHeight = 75; // Height of the navigation bar
+
+      // Show sticky filter when the first section has scrolled past the nav
+      // Hide it when we're back at the top (first section is below the nav)
+      const shouldShow = rect.top < navHeight;
+      setIsVisible(shouldShow);
+    };
+
+    // Initial check
+    handleScroll();
+
+    // Listen to scroll events
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
-      observer.disconnect();
+      window.removeEventListener('scroll', handleScroll);
     };
   }, [targetSectionIds]);
 
@@ -92,10 +98,6 @@ const StickyFilterPanel: React.FC<StickyFilterPanelProps> = ({
     }
   };
 
-  const categoryFilters = filterOptions
-    .filter(option => ['fuel-production', 'fuel-weaponization'].includes(option.value))
-    .reverse();
-
   const statusFilters = filterOptions
     .filter(option => ['operational', 'unknown', 'construction', 'likely-destroyed', 'destroyed'].includes(option.value))
     .reverse();
@@ -104,8 +106,8 @@ const StickyFilterPanel: React.FC<StickyFilterPanelProps> = ({
     <div
       id="sticky-filter-panel"
       className={`fixed top-[75px] left-0 w-full z-[999] transition-all duration-300 ${isVisible
-          ? 'translate-y-0 opacity-100'
-          : '-translate-y-full opacity-0 pointer-events-none'
+        ? 'translate-y-0 opacity-100'
+        : '-translate-y-full opacity-0 pointer-events-none'
         }`}
       style={{
         background: 'linear-gradient(90deg, #162239 0%, #1b263b 55%, #121c2f 100%)',
@@ -117,45 +119,11 @@ const StickyFilterPanel: React.FC<StickyFilterPanelProps> = ({
           <style>{`
             #sticky-filter-panel::-webkit-scrollbar { display: none; }
           `}</style>
-          {/* <span className="text-white/90 text-xs font-semibold tracking-[0.18em] uppercase whitespace-nowrap">
-            Filters
-          </span> */}
-
-          {/* Category Filters */}
-          <div className="flex items-center gap-2 min-w-max">
-            <span className="text-white/65 text-[11px] font-semibold tracking-[0.18em] uppercase">
-              Categories:
-            </span>
-            {categoryFilters.map((option) => {
-              const isActive = activeFilters.includes(option.value);
-              const base = option.color ?? '#00558C';
-              const backgroundColor = isActive ? base : '#ffffff';
-              const textColor = isActive ? '#ffffff' : '#1e293b';
-
-              return (
-                <button
-                  key={option.value}
-                  onClick={() => handleFilterToggle(option.value)}
-                  className={`px-4 py-2 text-[13px] font-bold tracking-wide uppercase border-2 transition-all rounded-md whitespace-nowrap ${isActive
-                      ? 'shadow-[0_4px_12px_rgba(0,85,140,0.3)]'
-                      : 'hover:shadow-[0_2px_8px_rgba(0,0,0,0.1)] hover:border-opacity-80'
-                    }`}
-                  style={{
-                    backgroundColor,
-                    color: textColor,
-                    borderColor: base,
-                  }}
-                >
-                  {option.label}
-                </button>
-              );
-            })}
-          </div>
 
           {/* Status Filters */}
           <div className="flex items-center gap-2 min-w-max">
             <span className="text-white/65 text-[11px] font-semibold tracking-[0.18em] uppercase">
-              Status:
+              Filter Status:
             </span>
             {statusFilters.map((option) => {
               const isActive = activeFilters.includes(option.value);
@@ -205,14 +173,20 @@ const StickyFilterPanel: React.FC<StickyFilterPanelProps> = ({
                   }}
                   aria-pressed={isActive}
                 >
-                  <span
+                  <img
+                    src={`${import.meta.env.BASE_URL}images/${option.value}.svg`}
+                    alt=""
+                    className="w-6 h-6"
+
+                  />
+                  {option.label}
+                  {/* <span
                     className="inline-flex h-4 w-4 rounded-full border"
                     style={{
                       backgroundColor: circleBackground,
                       borderColor: circleBorder
                     }}
-                  />
-                  {option.label}
+                  /> */}
                 </button>
               );
             })}

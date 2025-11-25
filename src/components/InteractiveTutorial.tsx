@@ -43,6 +43,14 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete })
     },
     {
       id: 2,
+      title: 'Understanding the Summary Boxes',
+      description: 'Each box shows key metrics: the number of affected facilities, their damage status (color-coded chips), and impact details. Click any box to highlight related systems in the grid below and see exactly which facilities were affected.',
+      icon: <Grid className="w-6 h-6" />,
+      targetElement: 'damage-grid-section',
+      position: 'bottom',
+    },
+    {
+      id: 3,
       title: 'Filter Controls',
       description: 'Use these filters to focus on specific facility categories (Enrichment, Weaponization, etc.) or damage statuses. Filters apply to all visualizations below.',
       icon: <Filter className="w-6 h-6" />,
@@ -50,7 +58,7 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete })
       position: 'bottom',
     },
     {
-      id: 3,
+      id: 4,
       title: 'Status Overview (Waffle Chart)',
       description: 'Each square represents a facility, color-coded by damage status. Hover over squares for details, or use filters to highlight specific categories.',
       icon: <Grid className="w-6 h-6" />,
@@ -58,23 +66,23 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete })
       position: 'top',
     },
     {
-      id: 4,
+      id: 5,
       title: 'System Damage Grid',
-      description: 'Explore detailed damage assessments grouped by nuclear system. Click on cards to see facility-level information and filter by category or status.',
+      description: 'Explore detailed damage assessments grouped by nuclear system. Each card shows all facility locations for that system, with color-coded status indicators. Hover over the colored squares to see specific facility details.',
       icon: <Factory className="w-6 h-6" />,
       targetElement: 'damage-grid-section',
       position: 'top',
     },
     {
-      id: 5,
+      id: 6,
       title: 'Interactive Flowchart',
       description: 'Navigate the nuclear supply chain flowchart. Zoom with scroll wheel, pan by dragging, and click the expand button for fullscreen mode.',
       icon: <MapPin className="w-6 h-6" />,
-      targetElement: 'visualization-section',
+      targetElement: 'primary-view-section',
       position: 'top',
     },
     {
-      id: 6,
+      id: 7,
       title: 'You\'re all set!',
       description: 'Start exploring the data with filters, click on elements for details, and use fullscreen mode for detailed analysis. Enjoy your research!',
       icon: <CheckCircle className="w-6 h-6" />,
@@ -167,7 +175,7 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete })
     if (currentStepData.position === 'center' || !currentStepData.targetElement) {
       return 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2';
     }
-    
+
     // For elements with targets, position relative to viewport
     return 'fixed bottom-8 left-1/2 transform -translate-x-1/2';
   };
@@ -244,11 +252,10 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete })
               {tutorialSteps.map((step, index) => (
                 <div
                   key={step.id}
-                  className={`h-2 flex-1 rounded-full transition-all duration-300 ${
-                    index <= currentStep
+                  className={`h-2 flex-1 rounded-full transition-all duration-300 ${index <= currentStep
                       ? 'bg-blue-600'
                       : 'bg-gray-200'
-                  }`}
+                    }`}
                 />
               ))}
             </div>
@@ -258,11 +265,10 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete })
               <button
                 onClick={handlePrevious}
                 disabled={isFirstStep}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                  isFirstStep
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${isFirstStep
                     ? 'text-gray-400 cursor-not-allowed'
                     : 'text-gray-700 hover:bg-gray-100'
-                }`}
+                  }`}
               >
                 <ChevronLeft className="w-4 h-4" />
                 Previous

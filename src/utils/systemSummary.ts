@@ -163,11 +163,19 @@ export const getDisplayCategory = (name: string): DisplayCategory => {
     n.includes('uranium milling') ||
     n.includes('uranium conversion') ||
     n.includes('uranium enrichment') ||
-    n.includes('heu storage') ||
+    n.includes('enriched uranium storage') ||
     n.includes('russian supply') ||
     n.includes('fuel manufacturing')
   ) {
     return 'Uranium Fuel Production';
+  }
+
+  // Plutonium Pathway
+  if (
+    n.includes('heavy water') ||
+    n.includes('plutonium')
+  ) {
+    return 'Plutonium Pathway';
   }
 
   // Nuclear Energy Production
@@ -192,14 +200,6 @@ export const getDisplayCategory = (name: string): DisplayCategory => {
     n.includes('warhead')
   ) {
     return 'Weaponization';
-  }
-
-  // Plutonium Pathway
-  if (
-    n.includes('heavy water') ||
-    n.includes('plutonium')
-  ) {
-    return 'Plutonium Pathway';
   }
 
   return 'Other';
@@ -243,7 +243,79 @@ export const buildSystemGroups = (facilityData: FacilityData[]): SystemGroup[] =
     });
   });
 
-  return Array.from(groups.values()).sort((a, b) => a.name.localeCompare(b.name));
+  // Define the desired order for each category
+  const categoryOrder: Record<string, string[]> = {
+    'Centrifuge Infrastructure': [
+      'centrifuge component',
+      'centrifuge manufacturing',
+      'centrifuge testing',
+      'centrifuge stockpiles'
+    ],
+    'Uranium Fuel Production': [
+      'uranium mining',
+      'foreign uranium',
+      'uranium milling',
+      'uranium conversion',
+      'uranium enrichment',
+      'enriched uranium storage',
+      'russian supply',
+      'fuel manufacturing'
+    ],
+    'Plutonium Pathway': [
+      'heavy water production',
+      'heavy water reactor'
+    ],
+    'Nuclear Energy Production': [
+      'research reactor',
+      'power reactor',
+      'small modular reactor'
+    ],
+    'Weaponization': [
+      'plutonium reprocessing',
+      'lab-scale uranium metal',
+      'weapons-grade uranium metal',
+      'administration',
+      'r&d radiation',
+      'multi-point initiation system plastic',
+      'multi-point initiation system development',
+      'neutron initiator',
+      'nuclear warhead assembly'
+    ]
+  };
+
+  const getSystemOrder = (system: SystemGroup): number => {
+    const category = system.displayCategory;
+    const order = categoryOrder[category];
+    if (!order) return 999;
+
+    const systemNameLower = system.name.toLowerCase();
+    const index = order.findIndex(keyword => systemNameLower.includes(keyword));
+    return index === -1 ? 999 : index;
+  };
+
+  return Array.from(groups.values()).sort((a, b) => {
+    // First sort by display category order
+    const categoryA = a.displayCategory;
+    const categoryB = b.displayCategory;
+    const categoryOrderList = ['Centrifuge Infrastructure', 'Uranium Fuel Production', 'Plutonium Pathway', 'Nuclear Energy Production', 'Weaponization', 'Other'];
+    const catIndexA = categoryOrderList.indexOf(categoryA);
+    const catIndexB = categoryOrderList.indexOf(categoryB);
+    
+    if (catIndexA !== catIndexB) {
+      return catIndexA - catIndexB;
+    }
+
+    // Then sort by system order within category
+    const orderA = getSystemOrder(a);
+    const orderB = getSystemOrder(b);
+    
+    if (orderA !== orderB) {
+      return orderA - orderB;
+    }
+
+    // Finally, alphabetically if no specific order
+    return a.name.localeCompare(b.name);
+  });
 };
 
 const statusPriority: Record<NormalizedStatusKey, number> = {

@@ -22,6 +22,7 @@ interface WaffleTile {
   id: string;
   statusKey: StatusKey;
   label: string;
+  location: string;
   mainCategory: string;
   subCategory: string;
   rawStatus: string;
@@ -122,7 +123,7 @@ const StatusChartsSection: React.FC<StatusChartsSectionProps> = ({ facilityData,
     }
 
     // Handle status filters
-    const statusFiltersInExternal = externalFilters.filter(f => 
+    const statusFiltersInExternal = externalFilters.filter(f =>
       STATUS_ORDER.includes(f as StatusKey)
     ) as StatusKey[];
 
@@ -170,7 +171,8 @@ const StatusChartsSection: React.FC<StatusChartsSectionProps> = ({ facilityData,
       return {
         id: facility.Item_Id || `facility-${index}`,
         statusKey,
-        label: facility.Sub_Item?.trim() || facility.Locations?.trim() || 'Unnamed site',
+        label: facility.Sub_Item?.trim() || 'Unnamed',
+        location: facility.Locations?.trim() || 'Unknown location',
         mainCategory: facility['Main-Category'] || 'Unknown category',
         subCategory: facility['Sub-Category'] || 'Unspecified stream',
         rawStatus: facility.Sub_Item_Status || facility.status || 'Unknown status',
@@ -218,7 +220,7 @@ const StatusChartsSection: React.FC<StatusChartsSectionProps> = ({ facilityData,
   const renderWaffleChart = (chartData: ReturnType<typeof createChartModel>, title: string, subtitle: string) => {
     const { tiles, totalCount } = chartData;
     const gridColumns = getGridColumns(totalCount);
-    
+
     const waffleGridStyle: React.CSSProperties = {
       gridTemplateColumns: `repeat(${gridColumns}, ${baseTileSize}px)`,
       gridAutoRows: `${baseTileSize}px`,
@@ -254,13 +256,33 @@ const StatusChartsSection: React.FC<StatusChartsSectionProps> = ({ facilityData,
                       backgroundColor: definition.color,
                       opacity,
                     }}
-                    title={`${tile.label}\nCategory: ${tile.mainCategory}\nStatus: ${definition.label}`}
+                    title={`${tile.location}\nCategory: ${tile.mainCategory}\nStatus: ${definition.label}`}
                   >
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block z-50 pointer-events-none">
-                      <div className="bg-gray-900 text-white text-xs rounded-lg py-2 px-3 shadow-xl max-w-xs whitespace-normal">
-                        <div className="font-semibold mb-1">{tile.label}</div>
-                        <div className="text-gray-300">Category: {tile.mainCategory}</div>
-                        <div className="text-gray-300">Status: {definition.label}</div>
+                      <div className="w-72 rounded-lg border-2 border-slate-600 bg-gradient-to-br from-slate-900 to-slate-800 px-4 py-3.5 shadow-2xl flex flex-col gap-2">
+                        <span className="text-base font-bold text-white leading-tight border-b border-slate-600 pb-2">
+                          {tile.location}
+                        </span>
+                        <div className="flex flex-col gap-1.5 text-xs">
+                          <div className="flex items-start justify-between gap-3">
+                            <span className="text-slate-400 font-medium">Category:</span>
+                            <span className="text-slate-100 text-right flex-1">{tile.mainCategory}</span>
+                          </div>
+                          <div className="flex items-start justify-between gap-3">
+                            <span className="text-slate-400 font-medium">System:</span>
+                            <span className="text-slate-100 text-right flex-1">{tile.subCategory}</span>
+                          </div>
+                          <div className="flex items-center justify-between gap-3 mt-1 pt-2 border-t border-slate-700">
+                            <span className="text-slate-400 font-medium">Status:</span>
+                            <span className="inline-flex items-center gap-1.5 font-semibold text-white">
+                              <span
+                                className="h-2.5 w-2.5 rounded-full border border-white/30 shadow-sm"
+                                style={{ backgroundColor: definition.color }}
+                              />
+                              {definition.label}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -308,7 +330,7 @@ const StatusChartsSection: React.FC<StatusChartsSectionProps> = ({ facilityData,
             'Fuel Production',
             'Facilities involved in uranium enrichment and fuel cycle'
           )}
-          
+
           {renderWaffleChart(
             weaponizationChart,
             'Weaponization',

@@ -16,34 +16,60 @@ export interface FacilityData {
   fill: string;
 }
 
+// Helper function to parse CSV line with proper quote handling
+function parseCSVLine(line: string): string[] {
+  const result: string[] = [];
+  let current = '';
+  let inQuotes = false;
+  
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    
+    if (char === '"') {
+      // Toggle quote state
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      // End of field
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  
+  // Add the last field
+  result.push(current.trim());
+  
+  return result;
+}
+
 export async function loadFacilityData(): Promise<FacilityData[]> {
   try {
     const response = await fetch(`${import.meta.env.BASE_URL}iranian_nuclear_facilities_dataset.csv`);
     const text = await response.text();
 
     const lines = text.split('\n');
-    const headers = lines[0].split(',');
     const facilities: FacilityData[] = [];
 
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i].trim();
       if (!line) continue;
 
-      const values = line.split(',');
-      if (values.length < headers.length) continue;
+      const values = parseCSVLine(line);
+      if (values.length < 7) continue; // Need at least 7 fields
 
       // CSV Format: Item_Id,Main-Category,Sub-Category,,Sub_Item,Locations,Sub_Item_Status
       facilities.push({
-        shape_id: values[0]?.replace(/"/g, '') || '',
-        Item_Id: values[0]?.replace(/"/g, '') || '',
-        'Main-Category': values[1]?.replace(/"/g, '') || '',
-        'Sub-Category': values[2]?.replace(/"/g, '') || '',
-        Sub_Item: values[4]?.replace(/"/g, '') || '', // Skip empty column 3
-        Locations: values[5]?.replace(/"/g, '') || '',
-        Sub_Item_Status: values[6]?.replace(/"/g, '') || '',
-        name: values[5]?.replace(/"/g, '') || '', // Use Locations as name
-        status: values[6]?.replace(/"/g, '') || '', // Use Sub_Item_Status as status
-        category: values[1]?.replace(/"/g, '') || '', // Use Main-Category as category
+        shape_id: values[0] || '',
+        Item_Id: values[0] || '',
+        'Main-Category': values[1] || '',
+        'Sub-Category': values[2] || '',
+        Sub_Item: values[4] || '', // Skip empty column 3
+        Locations: values[5] || '',
+        Sub_Item_Status: values[6] || '',
+        name: values[5] || '', // Use Locations as name
+        status: values[6] || '', // Use Sub_Item_Status as status
+        category: values[1] || '', // Use Main-Category as category
         x: 0,
         y: 0,
         width: 0,
