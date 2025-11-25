@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { Crosshair, Shield, Building } from 'lucide-react';
+import { Crosshair } from 'lucide-react';
 import { FacilityData } from '../utils/csvLoader';
 import { buildSystemSummary, SystemSummaryResult } from '../utils/systemSummary';
 import { IMPACT_CONFIGS } from '../data/impactConfigs';
@@ -34,23 +34,6 @@ interface DamageSummaryGridProps {
   externalFilters?: FilterType[];
 }
 
-const CAPABILITY_IMPACTS = [
-  {
-    id: 'uranium-metal',
-    title: 'Weapons-grade uranium metal production',
-    description:
-      'Manufacturing pathway eliminated, disrupting supply of weapon cores.',
-    Icon: Shield,
-  },
-  {
-    id: 'administrative-centers',
-    title: 'Program administrative centers',
-    description:
-      'Command and coordination hubs dismantled, slowing decision cycles.',
-    Icon: Building,
-  },
-];
-
 const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
   facilityData,
   activeImpactId,
@@ -58,7 +41,6 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
   systemSummary,
   showImpactSection = true,
   showSystemGrid = true,
-  showCapabilitiesSection = true,
   externalFilters,
 }) => {
   const [internalImpactId, setInternalImpactId] = useState<string | null>(null);
@@ -80,9 +62,9 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
     // Check for category filters
     const hasFuelProduction = externalFilters.includes('fuel-production');
     const hasFuelWeaponization = externalFilters.includes('fuel-weaponization');
-    
+
     // Check for status filters
-    const statusFilters = externalFilters.filter(f => 
+    const statusFilters = externalFilters.filter(f =>
       ['operational', 'unknown', 'construction', 'likely-destroyed', 'destroyed'].includes(f)
     );
 
@@ -92,7 +74,7 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
         let shouldIncludeSystem = true;
         if (hasFuelProduction || hasFuelWeaponization) {
           const mainCategory = system.mainCategory?.toLowerCase() ?? '';
-          shouldIncludeSystem = 
+          shouldIncludeSystem =
             (hasFuelProduction && mainCategory.includes('fuel production')) ||
             (hasFuelWeaponization && mainCategory.includes('weaponization'));
         }
@@ -134,6 +116,24 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
       }),
     [impactSummaries]
   );
+
+  const groupedSummaries = useMemo(() => {
+    const groups: Record<string, typeof summariesWithIcons> = {
+      'Centrifuge Infrastructure': [],
+      'Uranium Fuel Production': [],
+      'Plutonium Pathway': [],
+      'Weaponization Capabilities': [],
+    };
+
+    summariesWithIcons.forEach((summary) => {
+      const category = summary.category;
+      if (groups[category]) {
+        groups[category].push(summary);
+      }
+    });
+
+    return groups;
+  }, [summariesWithIcons]);
 
   const resolvedImpactId = (showImpactSection || showSystemGrid) ? activeImpactId ?? internalImpactId : null;
   const activeImpact = resolvedImpactId ? impactSummaryMap[resolvedImpactId] ?? null : null;
@@ -189,111 +189,100 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
             )}
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {summariesWithIcons.map((summary) => {
-              const { id, label, descriptor, primaryValue, primaryLabel, annotation, statusBreakdown, hasData, systemIds, Icon } = summary;
-              const isFilterable = hasData && systemIds.length > 0;
-              const isActive = isFilterable && resolvedImpactId === id;
-              const isDimmed = Boolean(resolvedImpactId && resolvedImpactId !== id && activeImpact);
-
-              const cardClasses = [
-                'flex flex-col gap-2.5 bg-slate-50 border rounded-xl p-4 text-left transition-all duration-200',
-                isActive ? 'border-blue-500 shadow-lg ring-2 ring-blue-200' : 'border-slate-200 shadow-sm hover:shadow-md',
-                isDimmed ? 'opacity-50' : 'opacity-100',
-                isFilterable ? 'cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50' : 'cursor-default',
-              ].join(' ');
+          <div className="grid gap-6 md:grid-cols-2">
+            {['Centrifuge Infrastructure', 'Uranium Fuel Production', 'Plutonium Pathway', 'Weaponization Capabilities'].map((category, index) => {
+              const summaries = groupedSummaries[category];
+              if (!summaries || summaries.length === 0) return null;
 
               return (
-                <button
-                  key={id}
-                  type="button"
-                  className={cardClasses}
-                  onClick={() => {
-                    if (!isFilterable) return;
-                    handleImpactSelect(resolvedImpactId === id ? null : id);
-                  }}
-                  disabled={!isFilterable}
-                  aria-pressed={isFilterable ? isActive : undefined}
-                >
-                  <div className="flex items-start gap-2.5">
-                    <div className="p-1.5 rounded-lg bg-white border border-slate-200 text-blue-700">
-                      {Icon ? <Icon className="w-4 h-4" aria-hidden="true" /> : null}
-                    </div>
-                    <div>
-                      <p className="text-[10px] uppercase tracking-wide font-semibold text-slate-500">
-                        {descriptor}
-                      </p>
-                      <h3 className="text-sm font-semibold text-slate-900 leading-snug">
-                        {label}
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-2xl font-bold text-slate-900">{primaryValue}</span>
-                    <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-                      {primaryLabel}
+                <div key={category} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                  <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">
+                      {index + 1}
                     </span>
-                  </div>
+                    {category}
+                  </h3>
+                  <div className="space-y-3">
+                    {summaries.map((summary) => {
+                      const { id, label, descriptor, primaryValue, primaryLabel, annotation, statusBreakdown, hasData, systemIds, Icon } = summary;
+                      const isFilterable = hasData && systemIds.length > 0;
+                      const isActive = isFilterable && resolvedImpactId === id;
+                      const isDimmed = Boolean(resolvedImpactId && resolvedImpactId !== id && activeImpact);
 
-                  <p className="text-[10px] text-slate-600 leading-relaxed">
-                    {annotation}
-                  </p>
+                      const cardClasses = [
+                        'flex flex-col gap-2.5 bg-white border rounded-xl p-4 text-left transition-all duration-200',
+                        isActive ? 'border-blue-500 shadow-lg ring-2 ring-blue-200' : 'border-slate-200 shadow-sm hover:shadow-md',
+                        isDimmed ? 'opacity-50' : 'opacity-100',
+                        isFilterable ? 'cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50' : 'cursor-default',
+                      ].join(' ');
 
-                  {statusBreakdown.length > 0 && (
-                    <div className="flex flex-wrap gap-2 text-[11px] font-medium">
-                      {statusBreakdown.map(({ key, label: statusLabel, color, count }) => (
-                        <span
-                          key={`${id}-${key}`}
-                          className="inline-flex items-center gap-1 px-2 py-1 rounded-md shadow-sm text-gray-900"
-                          style={{ backgroundColor: color }}
+                      return (
+                        <button
+                          key={id}
+                          type="button"
+                          className={cardClasses}
+                          onClick={() => {
+                            if (!isFilterable) return;
+                            handleImpactSelect(resolvedImpactId === id ? null : id);
+                          }}
+                          disabled={!isFilterable}
+                          aria-pressed={isFilterable ? isActive : undefined}
                         >
-                          <span>{statusLabel}</span>
-                          <span className="font-semibold">{count}</span>
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                          <div className="flex items-start gap-2.5 w-full">
+                            <div className="p-1.5 rounded-lg bg-slate-50 border border-slate-200 text-blue-700 shrink-0">
+                              {Icon ? <Icon className="w-4 h-4" aria-hidden="true" /> : null}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[10px] uppercase tracking-wide font-semibold text-slate-500 truncate">
+                                {descriptor}
+                              </p>
+                              <h3 className="text-sm font-semibold text-slate-900 leading-snug">
+                                {label}
+                              </h3>
+                            </div>
+                          </div>
 
-                  {!isFilterable && (
-                    <p className="text-[11px] text-slate-400">
-                      Awaiting facility-level confirmation.
-                    </p>
-                  )}
-                </button>
+                          <div className="flex items-baseline gap-1.5">
+                            <span className="text-xl font-bold text-slate-900">{primaryValue}</span>
+                            <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 truncate">
+                              {primaryLabel}
+                            </span>
+                          </div>
+
+                          <p className="text-[10px] text-slate-600 leading-relaxed">
+                            {annotation}
+                          </p>
+
+                          {statusBreakdown.length > 0 && (
+                            <div className="flex flex-wrap gap-2 text-[11px] font-medium pt-1">
+                              {statusBreakdown.map(({ key, label: statusLabel, color, count }) => (
+                                <span
+                                  key={`${id}-${key}`}
+                                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md shadow-sm text-gray-900"
+                                  style={{ backgroundColor: color }}
+                                >
+                                  <span>{statusLabel}</span>
+                                  <span className="font-semibold">{count}</span>
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {!isFilterable && (
+                            <p className="text-[10px] text-slate-400 italic">
+                              {id === 'uranium-metal' || id === 'administrative-centers'
+                                ? 'Capability assessment'
+                                : 'Awaiting facility-level confirmation'}
+                            </p>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               );
             })}
           </div>
-        </div>
-      )}
-
-      {showCapabilitiesSection && (
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-5 mb-8">
-          <div className="mt-2">
-            <h3 className="text-base font-semibold text-gray-900 mb-3">
-              Critical Capabilities Neutralized
-            </h3>
-            <div className="grid gap-3 md:grid-cols-2">
-              {CAPABILITY_IMPACTS.map(({ id, title, description, Icon }) => (
-                <div
-                  key={id}
-                  className="flex gap-3 bg-slate-900 text-slate-50 rounded-xl p-4 shadow-sm"
-                >
-                  <div className="p-1.5 rounded-lg bg-slate-800 text-blue-200">
-                    <Icon className="w-4 h-4" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-semibold mb-0.5">{title}</h4>
-                    <p className="text-xs text-slate-200 leading-relaxed">{description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <p className="mt-5 text-[10px] text-gray-500">
-            Quantities reflect conservative minimums cited in the assessment; where facility data exists.
-          </p>
         </div>
       )}
 
@@ -311,83 +300,100 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredGroupedSystems.map((system) => {
-              const totalLocations = system.locations.length;
-              const isFocusActive = Boolean(activeImpact);
-              const isHighlighted = !isFocusActive || activeImpact?.systemIds.includes(system.id);
-              const mainCategory = system.mainCategory?.toLowerCase() ?? '';
-              const categoryBase = mainCategory.includes('weapon') ? '#1E1E1E' : '#00558C';
-              const primaryBorder = lightenHexColor(categoryBase, 0.7);
-              const subtleBorder = lightenHexColor(categoryBase, 0.82);
-              const borderColor = isHighlighted ? primaryBorder : subtleBorder;
-              const borderWidth = isHighlighted ? 3 : 2;
-              const cardClasses = [
-                'bg-white rounded-2xl p-4 flex flex-col transition-all border',
-                isFocusActive && isHighlighted
-                  ? 'shadow-[0_18px_34px_rgba(15,23,42,0.28)]'
-                  : 'shadow-sm hover:shadow-md',
-                isHighlighted ? 'opacity-100' : 'opacity-40',
-              ].join(' ');
+          <div className="space-y-10">
+            {['Centrifuge Infrastructure', 'Uranium Fuel Production', 'Plutonium Pathway', 'Nuclear Energy Production', 'Weaponization', 'Other'].map((category) => {
+              const systems = filteredGroupedSystems.filter(s => s.displayCategory === category);
+              if (systems.length === 0) return null;
 
               return (
-                <div
-                  key={system.id}
-                  className={cardClasses}
-                  style={{
-                    borderColor,
-                    borderWidth,
-                    boxShadow: isFocusActive && isHighlighted
-                      ? '0 18px 34px rgba(10, 18, 32, 0.35)'
-                      : '0 10px 24px rgba(15, 23, 42, 0.08)',
-                  }}
-                >
-                  <div className="flex items-start justify-between gap-2 mb-3">
-                    <div className="space-y-0.5 flex-1 min-w-0">
-                      <p className="text-[10px] uppercase tracking-wide font-semibold text-gray-500">
-                        {system.mainCategory}
-                      </p>
-                      <h3 className="text-sm font-semibold text-gray-900 leading-tight line-clamp-2">
-                        {system.name}
-                      </h3>
-                    </div>
-                    <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-gray-100 text-gray-700 whitespace-nowrap flex-shrink-0">
-                      {totalLocations}
+                <div key={category}>
+                  <h4 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2 flex items-center gap-2">
+                    {category}
+                    <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                      {systems.length}
                     </span>
-                  </div>
-
-                  <div className="grid grid-cols-12 gap-1 content-start">
-                    {system.locations.map((location) => {
-                      const tooltipLabel = `${location.locationName}${location.detailName ? ` • ${location.detailName}` : ''} • ${location.statusText}`;
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {systems.map((system) => {
+                      const totalLocations = system.locations.length;
+                      const isFocusActive = Boolean(activeImpact);
+                      const isHighlighted = !isFocusActive || activeImpact?.systemIds.includes(system.id);
+                      const mainCategory = system.mainCategory?.toLowerCase() ?? '';
+                      const categoryBase = mainCategory.includes('weapon') ? '#1E1E1E' : '#00558C';
+                      const primaryBorder = lightenHexColor(categoryBase, 0.7);
+                      const subtleBorder = lightenHexColor(categoryBase, 0.82);
+                      const borderColor = isHighlighted ? primaryBorder : subtleBorder;
+                      const borderWidth = isHighlighted ? 3 : 2;
+                      const cardClasses = [
+                        'bg-white rounded-2xl p-4 flex flex-col transition-all border',
+                        isFocusActive && isHighlighted
+                          ? 'shadow-[0_18px_34px_rgba(15,23,42,0.28)]'
+                          : 'shadow-sm hover:shadow-md',
+                        isHighlighted ? 'opacity-100' : 'opacity-40',
+                      ].join(' ');
 
                       return (
-                        <div key={location.id} className="relative group">
-                          <div
-                            tabIndex={0}
-                            aria-label={tooltipLabel}
-                            className="w-4 h-4 rounded-sm cursor-help transition-all hover:scale-125 hover:ring-2 hover:ring-offset-1 hover:ring-blue-500 hover:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 focus-visible:z-10"
-                            style={{ backgroundColor: location.statusMeta.color }}
-                          />
-                          <span className="pointer-events-none absolute left-1/2 top-full hidden h-2 w-2 -translate-x-1/2 -translate-y-1 rotate-45 border border-slate-700 border-t-0 border-l-0 bg-slate-900 shadow-lg group-hover:block group-focus-within:block" />
-                          <div className="pointer-events-none absolute left-1/2 top-full z-30 hidden w-52 -translate-x-1/2 translate-y-2 rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-[11px] text-slate-100 shadow-xl group-hover:flex group-focus-within:flex flex-col gap-1">
-                            <span className="text-xs font-semibold text-white leading-tight">
-                              {location.locationName}
-                            </span>
-                            {location.detailName && (
-                              <span className="text-[10px] text-slate-300 leading-tight">
-                                {location.detailName}
-                              </span>
-                            )}
-                            <div className="mt-1 flex items-center justify-between gap-2 text-[10px]">
-                              <span className="text-slate-400">Status</span>
-                              <span className="inline-flex items-center gap-1 font-semibold text-white">
-                                <span
-                                  className="h-2 w-2 rounded-full border border-white/20"
-                                  style={{ backgroundColor: location.statusMeta.color }}
-                                />
-                                {location.statusText}
-                              </span>
+                        <div
+                          key={system.id}
+                          className={cardClasses}
+                          style={{
+                            borderColor,
+                            borderWidth,
+                            boxShadow: isFocusActive && isHighlighted
+                              ? '0 18px 34px rgba(10, 18, 32, 0.35)'
+                              : '0 10px 24px rgba(15, 23, 42, 0.08)',
+                          }}
+                        >
+                          <div className="flex items-start justify-between gap-2 mb-3">
+                            <div className="space-y-0.5 flex-1 min-w-0">
+                              <p className="text-[10px] uppercase tracking-wide font-semibold text-gray-500">
+                                {system.mainCategory}
+                              </p>
+                              <h3 className="text-sm font-semibold text-gray-900 leading-tight line-clamp-2">
+                                {system.name}
+                              </h3>
                             </div>
+                            <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-gray-100 text-gray-700 whitespace-nowrap flex-shrink-0">
+                              {totalLocations}
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-12 gap-1 content-start">
+                            {system.locations.map((location) => {
+                              const tooltipLabel = `${location.locationName}${location.detailName ? ` • ${location.detailName}` : ''} • ${location.statusText}`;
+
+                              return (
+                                <div key={location.id} className="relative group">
+                                  <div
+                                    tabIndex={0}
+                                    aria-label={tooltipLabel}
+                                    className="w-4 h-4 rounded-sm cursor-help transition-all hover:scale-125 hover:ring-2 hover:ring-offset-1 hover:ring-blue-500 hover:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 focus-visible:z-10"
+                                    style={{ backgroundColor: location.statusMeta.color }}
+                                  />
+                                  <span className="pointer-events-none absolute left-1/2 top-full hidden h-2 w-2 -translate-x-1/2 -translate-y-1 rotate-45 border border-slate-700 border-t-0 border-l-0 bg-slate-900 shadow-lg group-hover:block group-focus-within:block" />
+                                  <div className="pointer-events-none absolute left-1/2 top-full z-30 hidden w-52 -translate-x-1/2 translate-y-2 rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-[11px] text-slate-100 shadow-xl group-hover:flex group-focus-within:flex flex-col gap-1">
+                                    <span className="text-xs font-semibold text-white leading-tight">
+                                      {location.locationName}
+                                    </span>
+                                    {location.detailName && (
+                                      <span className="text-[10px] text-slate-300 leading-tight">
+                                        {location.detailName}
+                                      </span>
+                                    )}
+                                    <div className="mt-1 flex items-center justify-between gap-2 text-[10px]">
+                                      <span className="text-slate-400">Status</span>
+                                      <span className="inline-flex items-center gap-1 font-semibold text-white">
+                                        <span
+                                          className="h-2 w-2 rounded-full border border-white/20"
+                                          style={{ backgroundColor: location.statusMeta.color }}
+                                        />
+                                        {location.statusText}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       );

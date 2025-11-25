@@ -4,7 +4,6 @@ import SVGViewer from '../SVGViewer';
 import StatusChartsSection from '../StatusChartsSection';
 import DamageSummaryGrid from '../DamageSummaryGrid';
 import StickyFilterPanel from '../StickyFilterPanel';
-import StrikeImpactSummary from '../StrikeImpactSummary';
 import InteractiveTutorial from '../InteractiveTutorial';
 import { FilterType } from '../../data/nuclearData';
 import { loadFacilityData, FacilityData } from '../../utils/csvLoader';
@@ -136,7 +135,7 @@ function NuclearVisualization({
           </div>
         </div>
 
-        <div 
+        <div
           ref={flowchartContainerRef}
           className={`relative bg-white border border-gray-100 rounded-xl overflow-hidden ${isExpanded ? 'flex-1 m-6 mt-0' : ''}`}
           style={{ height: isExpanded ? 'auto' : '2000px' }}
@@ -161,6 +160,7 @@ export function NuclearFlowchartPage() {
   const [activeFilters, setActiveFilters] = useState<FilterType[]>(['all']);
   const [isVisualizationExpanded, setIsVisualizationExpanded] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [activeMainView, setActiveMainView] = useState<'flowchart' | 'stack'>('flowchart');
 
   // Load facility data
   useEffect(() => {
@@ -195,6 +195,12 @@ export function NuclearFlowchartPage() {
     setActiveFilters(filters);
   }, []);
 
+  useEffect(() => {
+    if (activeMainView !== 'flowchart' && isVisualizationExpanded) {
+      setIsVisualizationExpanded(false);
+    }
+  }, [activeMainView, isVisualizationExpanded]);
+
   const handleTutorialComplete = () => {
     setShowTutorial(false);
   };
@@ -207,30 +213,72 @@ export function NuclearFlowchartPage() {
   return (
     <div className="min-h-screen bg-white">
       {showTutorial && <InteractiveTutorial onComplete={handleTutorialComplete} />}
-      
+
       <Navigation onHelpClick={handleRestartTutorial} />
-      <StickyFilterPanel 
+      <StickyFilterPanel
         activeFilters={activeFilters}
         onFiltersChange={handleFiltersChange}
-        targetSectionIds={['waffle-chart-section', 'visualization-section']}
+        targetSectionIds={['waffle-chart-section', 'primary-view-section']}
       />
       <div className="flex flex-col items-center justify-center pt-20">
         <Header />
       </div>
       <TextSection />
-      <div id="strike-impact-summary">
-        <StrikeImpactSummary />
-      </div>
-      
       {/* Status Charts Section - Between text and visualization */}
       {!isVisualizationExpanded && (
         <>
           <div id="waffle-chart-section">
-            <StatusChartsSection 
+            <StatusChartsSection
               facilityData={facilityData}
               externalFilters={activeFilters}
             />
           </div>
+          <div className="max-w-7xl mx-auto px-6 mt-6">
+            <div
+              role="tablist"
+              aria-label="Primary visualization view"
+              className="inline-flex rounded-full border border-slate-200 bg-slate-100 p-1"
+            >
+              {[
+                {
+                  id: 'flowchart',
+                  label: 'Flowchart View',
+                  description: 'Interactive Supply Chain Flowchart',
+                },
+                {
+                  id: 'stack',
+                  label: 'Stack View',
+                  description: 'System-Level Damage Summary',
+                },
+              ].map((tab) => {
+                const isActive = activeMainView === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    role="tab"
+                    aria-selected={isActive}
+                    className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors whitespace-nowrap ${
+                      isActive
+                        ? 'bg-white text-blue-900 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                    onClick={() => setActiveMainView(tab.id as 'flowchart' | 'stack')}
+                  >
+                    <span className="block leading-tight">{tab.label}</span>
+                    <span className="block text-[11px] font-normal text-slate-500">
+                      {tab.description}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Primary View Section */}
+      <div id="primary-view-section">
+        {activeMainView === 'stack' && !isVisualizationExpanded && (
           <div id="damage-grid-section">
             <DamageSummaryGrid
               facilityData={facilityData}
@@ -239,25 +287,25 @@ export function NuclearFlowchartPage() {
               systemSummary={systemSummary}
               showImpactSection={false}
               showSystemGrid={true}
-              showCapabilitiesSection={false}
               externalFilters={activeFilters}
             />
           </div>
-        </>
-      )}
-      
-      {/* Interactive Visualization Section */}
-      <div id="visualization-section">
-        <NuclearVisualization 
-          showLocations={showLocations}
-          onToggleLocations={toggleLocations}
-          facilityData={facilityData}
-          systemSummary={systemSummary}
-          activeImpactId={activeImpactId}
-          activeFilters={activeFilters}
-          isExpanded={isVisualizationExpanded}
-          onToggleExpand={toggleVisualizationExpand}
-        />
+        )}
+
+        {activeMainView === 'flowchart' && (
+          <div id="visualization-section">
+            <NuclearVisualization
+              showLocations={showLocations}
+              onToggleLocations={toggleLocations}
+              facilityData={facilityData}
+              systemSummary={systemSummary}
+              activeImpactId={activeImpactId}
+              activeFilters={activeFilters}
+              isExpanded={isVisualizationExpanded}
+              onToggleExpand={toggleVisualizationExpand}
+            />
+          </div>
+        )}
       </div>
 
       {!isVisualizationExpanded && <FDDFooter />}

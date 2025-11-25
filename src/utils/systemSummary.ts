@@ -8,6 +8,14 @@ export type NormalizedStatusKey =
   | 'unknown'
   | 'other';
 
+export type DisplayCategory =
+  | 'Centrifuge Infrastructure'
+  | 'Uranium Fuel Production'
+  | 'Plutonium Pathway'
+  | 'Nuclear Energy Production'
+  | 'Weaponization'
+  | 'Other';
+
 export interface StatusMeta {
   key: NormalizedStatusKey;
   label: string;
@@ -27,6 +35,7 @@ export interface SystemGroup {
   id: string;
   name: string;
   mainCategory: string;
+  displayCategory: DisplayCategory;
   locations: SystemLocation[];
 }
 
@@ -37,6 +46,7 @@ export interface ImpactConfig {
   keywords: string[];
   fallbackMagnitude: string;
   fallbackAnnotation: string;
+  category: 'Centrifuge Infrastructure' | 'Uranium Fuel Production' | 'Plutonium Pathway' | 'Weaponization Capabilities';
 }
 
 export interface ImpactSummary {
@@ -54,6 +64,7 @@ export interface ImpactSummary {
   }>;
   hasData: boolean;
   systemIds: string[];
+  category: 'Centrifuge Infrastructure' | 'Uranium Fuel Production' | 'Plutonium Pathway' | 'Weaponization Capabilities';
 }
 
 export interface SystemSummaryResult {
@@ -126,6 +137,72 @@ export const getStatusMeta = (rawStatus: string | undefined): StatusMeta => {
     ...STATUS_META.other,
     label: rawStatus?.trim() || STATUS_META.other.label,
   };
+  return {
+    ...STATUS_META.other,
+    label: rawStatus?.trim() || STATUS_META.other.label,
+  };
+};
+
+export const getDisplayCategory = (name: string): DisplayCategory => {
+  const n = name.toLowerCase().trim();
+
+  // Centrifuge Infrastructure
+  if (
+    n.includes('centrifuge component') ||
+    n.includes('centrifuge manufacturing') ||
+    n.includes('centrifuge testing') ||
+    n.includes('centrifuge stockpiles')
+  ) {
+    return 'Centrifuge Infrastructure';
+  }
+
+  // Uranium Fuel Production
+  if (
+    n.includes('uranium mining') ||
+    n.includes('foreign uranium') ||
+    n.includes('uranium milling') ||
+    n.includes('uranium conversion') ||
+    n.includes('uranium enrichment') ||
+    n.includes('heu storage') ||
+    n.includes('russian supply') ||
+    n.includes('fuel manufacturing')
+  ) {
+    return 'Uranium Fuel Production';
+  }
+
+  // Nuclear Energy Production
+  if (
+    n.includes('research reactor') ||
+    n.includes('power reactor') ||
+    n.includes('small modular reactor')
+  ) {
+    return 'Nuclear Energy Production';
+  }
+
+  // Weaponization
+  if (
+    n.includes('reprocessing') ||
+    n.includes('uranium metal') ||
+    n.includes('weapon') ||
+    n.includes('administration') ||
+    n.includes('radiation') ||
+    n.includes('explosives') ||
+    n.includes('multi-point') ||
+    n.includes('neutron initiator') ||
+    n.includes('warhead')
+  ) {
+    return 'Weaponization';
+  }
+
+  // Plutonium Pathway
+  if (
+    n.includes('heavy water') ||
+    n.includes('plutonium')
+  ) {
+    return 'Plutonium Pathway';
+  }
+
+  return 'Other';
 };
 
 export const buildSystemGroups = (facilityData: FacilityData[]): SystemGroup[] => {
@@ -145,6 +222,7 @@ export const buildSystemGroups = (facilityData: FacilityData[]): SystemGroup[] =
         id: groupId,
         name: subCategory,
         mainCategory,
+        displayCategory: getDisplayCategory(subCategory),
         locations: [],
       });
     }
@@ -215,6 +293,7 @@ export const buildImpactSummaries = (
       statusBreakdown: [],
       hasData: false,
       systemIds: [],
+      category: config.category,
     }));
   }
 
@@ -273,6 +352,7 @@ export const buildImpactSummaries = (
       statusBreakdown,
       hasData,
       systemIds: matchedSystems.map((system) => system.id),
+      category: config.category,
     };
   });
 };

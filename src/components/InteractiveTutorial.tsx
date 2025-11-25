@@ -204,21 +204,18 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete })
       </div>
 
       {/* Highlight border for targeted element */}
-        {currentStepData.targetElement && spotlightStyle.width && (
-          <div
-            className="fixed z-[9999] pointer-events-none border-4 transition-all duration-300"
-            style={{ ...spotlightStyle, borderColor: '#00558c' }}
-          />
-        )}
+      {currentStepData.targetElement && spotlightStyle.width && (
+        <div
+          className="fixed z-[9999] pointer-events-none border-4 border-blue-500 transition-all duration-300"
+          style={spotlightStyle}
+        />
+      )}
 
       {/* Tutorial Card */}
       <div className={`${getTooltipPosition()} z-[10000] w-full max-w-lg px-4`}>
-        <div
-          className="bg-white rounded-2xl shadow-2xl border-2 overflow-hidden animate-fade-in"
-          style={{ borderColor: '#00558c' }}
-        >
+        <div className="bg-white rounded-2xl shadow-2xl border-2 border-blue-500 overflow-hidden animate-fade-in">
           {/* Header */}
-          <div className="px-6 py-4 text-white" style={{ backgroundColor: '#00558c' }}>
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 text-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex-shrink-0">
@@ -247,8 +244,11 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete })
               {tutorialSteps.map((step, index) => (
                 <div
                   key={step.id}
-                  className="h-2 flex-1 rounded-full transition-all duration-300"
-                  style={{ backgroundColor: index <= currentStep ? '#00558c' : '#e5e7eb' }}
+                  className={`h-2 flex-1 rounded-full transition-all duration-300 ${
+                    index <= currentStep
+                      ? 'bg-blue-600'
+                      : 'bg-gray-200'
+                  }`}
                 />
               ))}
             </div>
@@ -274,7 +274,7 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete })
 
               <button
                 onClick={handleNext}
-                className="flex items-center gap-2 px-6 py-2 text-white rounded-lg font-medium transition-colors bg-[#00558c] hover:bg-[#004472]"
+                className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
               >
                 {isLastStep ? (
                   <>

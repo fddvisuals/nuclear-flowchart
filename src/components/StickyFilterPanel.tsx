@@ -33,19 +33,6 @@ function darkenHex(hex: string, ratio: number): string {
   return mixHexColor(hex, '#000000', ratio);
 }
 
-function getReadableTextColor(hex: string): string {
-  const sanitized = hex.replace('#', '');
-  if (sanitized.length !== 6) {
-    return 'rgba(255,255,255,0.9)';
-  }
-
-  const r = parseInt(sanitized.slice(0, 2), 16) / 255;
-  const g = parseInt(sanitized.slice(2, 4), 16) / 255;
-  const b = parseInt(sanitized.slice(4, 6), 16) / 255;
-
-  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  return luminance > 0.65 ? 'rgba(78,78,78,0.85)' : 'rgba(255,255,255,0.9)';
-}
 
 interface StickyFilterPanelProps {
   activeFilters: FilterType[];
@@ -53,18 +40,19 @@ interface StickyFilterPanelProps {
   targetSectionIds?: string[]; // IDs of the sections to watch for scroll
 }
 
-const StickyFilterPanel: React.FC<StickyFilterPanelProps> = ({ 
-  activeFilters, 
+const StickyFilterPanel: React.FC<StickyFilterPanelProps> = ({
+  activeFilters,
   onFiltersChange,
   targetSectionIds = ['waffle-chart-section', 'visualization-section']
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [hoveredStatus, setHoveredStatus] = useState<string | null>(null);
 
   useEffect(() => {
     const targetSections = targetSectionIds
       .map(id => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null);
-    
+
     if (targetSections.length === 0) return;
 
     const observer = new IntersectionObserver(
@@ -115,11 +103,10 @@ const StickyFilterPanel: React.FC<StickyFilterPanelProps> = ({
   return (
     <div
       id="sticky-filter-panel"
-      className={`fixed top-[75px] left-0 w-full z-[999] transition-all duration-300 ${
-        isVisible
+      className={`fixed top-[75px] left-0 w-full z-[999] transition-all duration-300 ${isVisible
           ? 'translate-y-0 opacity-100'
           : '-translate-y-full opacity-0 pointer-events-none'
-      }`}
+        }`}
       style={{
         background: 'linear-gradient(90deg, #162239 0%, #1b263b 55%, #121c2f 100%)',
         boxShadow: '0 6px 18px rgba(10, 19, 35, 0.55)'
@@ -149,11 +136,10 @@ const StickyFilterPanel: React.FC<StickyFilterPanelProps> = ({
                 <button
                   key={option.value}
                   onClick={() => handleFilterToggle(option.value)}
-                  className={`px-4 py-2 text-[13px] font-bold tracking-wide uppercase border-2 transition-all rounded-md whitespace-nowrap ${
-                    isActive
+                  className={`px-4 py-2 text-[13px] font-bold tracking-wide uppercase border-2 transition-all rounded-md whitespace-nowrap ${isActive
                       ? 'shadow-[0_4px_12px_rgba(0,85,140,0.3)]'
                       : 'hover:shadow-[0_2px_8px_rgba(0,0,0,0.1)] hover:border-opacity-80'
-                  }`}
+                    }`}
                   style={{
                     backgroundColor,
                     color: textColor,
@@ -173,30 +159,58 @@ const StickyFilterPanel: React.FC<StickyFilterPanelProps> = ({
             </span>
             {statusFilters.map((option) => {
               const isActive = activeFilters.includes(option.value);
-              const baseColor = option.color ?? '#c7e9c0';
-              const backgroundColor = isActive
-                ? baseColor
-                : lightenHex(baseColor, 0.7);
-              const chipTextColor = getReadableTextColor(backgroundColor);
+              const baseColor = option.color ?? '#ffe0c2';
+              const isHovered = hoveredStatus === option.value;
+              const defaultBackground = '#141c2c';
+              const activeBackground = baseColor;
+              let backgroundColor = isActive ? activeBackground : defaultBackground;
+              let borderColor = isActive ? lightenHex(baseColor, 0.08) : 'rgba(255,255,255,0.35)';
+              let textColor = isActive ? '#1f2b3f' : 'rgba(255,255,255,0.85)';
+              let circleBackground = isActive ? darkenHex('#1f2b3f', 0.08) : lightenHex(baseColor, 0.35);
+              let circleBorder = isActive ? 'transparent' : 'rgba(255,255,255,0.4)';
+              let boxShadow = isActive ? '0 8px 20px rgba(0,0,0,0.25)' : '0 3px 10px rgba(0,0,0,0.25)';
+              let opacity = isActive ? 1 : 0.92;
+
+              if (isHovered) {
+                if (isActive) {
+                  backgroundColor = lightenHex(baseColor, 0.08);
+                  borderColor = lightenHex(baseColor, 0.15);
+                  circleBackground = darkenHex('#1f2b3f', 0.15);
+                } else {
+                  backgroundColor = '#26324a';
+                  borderColor = 'rgba(255,255,255,0.6)';
+                  circleBackground = baseColor;
+                  circleBorder = 'rgba(255,255,255,0.5)';
+                }
+                textColor = isActive ? '#1a2537' : '#ffffff';
+                boxShadow = '0 8px 22px rgba(0,0,0,0.45)';
+                opacity = 1;
+              }
 
               return (
                 <button
                   key={option.value}
                   onClick={() => handleFilterToggle(option.value)}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-[12px] font-black tracking-[0.08em] uppercase border transition-all whitespace-nowrap ${
-                    isActive
-                      ? 'shadow-[0_6px_18px_rgba(0,0,0,0.18)]'
-                      : 'hover:shadow-[0_4px_14px_rgba(0,0,0,0.12)]'
-                  }`}
+                  onMouseEnter={() => setHoveredStatus(option.value)}
+                  onMouseLeave={() => setHoveredStatus(null)}
+                  className="flex items-center gap-2 px-4 py-1.5 rounded-full text-[12px] font-black tracking-[0.08em] uppercase border transition-all whitespace-nowrap"
                   style={{
                     backgroundColor,
-                    color: chipTextColor,
-                    borderColor: baseColor
+                    borderColor,
+                    color: textColor,
+                    fontFamily: 'Lato, sans-serif',
+                    boxShadow,
+                    opacity,
+                    transition: 'background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease'
                   }}
+                  aria-pressed={isActive}
                 >
                   <span
-                    className="inline-flex h-3.5 w-3.5 rounded-full border border-white/45"
-                    style={{ backgroundColor: isActive ? baseColor : darkenHex(baseColor, 0.15) }}
+                    className="inline-flex h-4 w-4 rounded-full border"
+                    style={{
+                      backgroundColor: circleBackground,
+                      borderColor: circleBorder
+                    }}
                   />
                   {option.label}
                 </button>

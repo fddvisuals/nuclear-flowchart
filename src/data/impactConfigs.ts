@@ -8,6 +8,8 @@ import {
   Droplet,
   Target,
   Users,
+  Shield,
+  Building,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ImpactConfig as BaseImpactConfig } from '../utils/systemSummary';
@@ -22,6 +24,7 @@ export const IMPACT_CONFIGS: ImpactConfigWithIcon[] = [
     keywords: ['centrifuge manufacturing', 'centrifuge component'],
     fallbackMagnitude: '2+',
     fallbackAnnotation: 'Minimum confirmed neutralized facilities.',
+    category: 'Centrifuge Infrastructure',
     Icon: Factory,
   },
   {
@@ -31,6 +34,7 @@ export const IMPACT_CONFIGS: ImpactConfigWithIcon[] = [
     keywords: ['centrifuge testing', 'testing and development'],
     fallbackMagnitude: '2',
     fallbackAnnotation: 'At least two development sites disrupted.',
+    category: 'Centrifuge Infrastructure',
     Icon: Gauge,
   },
   {
@@ -40,6 +44,7 @@ export const IMPACT_CONFIGS: ImpactConfigWithIcon[] = [
     keywords: ['fuel manufacturing'],
     fallbackMagnitude: '3+',
     fallbackAnnotation: 'Multiple fuel fabrication lines impacted.',
+    category: 'Uranium Fuel Production',
     Icon: FlaskConical,
   },
   {
@@ -49,6 +54,7 @@ export const IMPACT_CONFIGS: ImpactConfigWithIcon[] = [
     keywords: ['uranium conversion', 'yellowcake'],
     fallbackMagnitude: '1',
     fallbackAnnotation: 'Conversion pathway severed at Esfahan.',
+    category: 'Uranium Fuel Production',
     Icon: Cog,
   },
   {
@@ -58,6 +64,7 @@ export const IMPACT_CONFIGS: ImpactConfigWithIcon[] = [
     keywords: ['uranium enrichment'],
     fallbackMagnitude: '3',
     fallbackAnnotation: 'Three enrichment complexes degraded.',
+    category: 'Uranium Fuel Production',
     Icon: Atom,
   },
   {
@@ -67,6 +74,7 @@ export const IMPACT_CONFIGS: ImpactConfigWithIcon[] = [
     keywords: ['heu storage', 'enriched uranium'],
     fallbackMagnitude: '3+',
     fallbackAnnotation: 'Storage depots struck to deny stockpiles.',
+    category: 'Uranium Fuel Production',
     Icon: Database,
   },
   {
@@ -76,6 +84,7 @@ export const IMPACT_CONFIGS: ImpactConfigWithIcon[] = [
     keywords: ['heavy water', 'plutonium'],
     fallbackMagnitude: '2',
     fallbackAnnotation: 'Route to plutonium production disabled.',
+    category: 'Plutonium Pathway',
     Icon: Droplet,
   },
   {
@@ -85,6 +94,7 @@ export const IMPACT_CONFIGS: ImpactConfigWithIcon[] = [
     keywords: ['weaponization', 'delivery systems', 'nuclear testing'],
     fallbackMagnitude: '10+',
     fallbackAnnotation: 'Weaponization infrastructure degraded.',
+    category: 'Weaponization Capabilities',
     Icon: Target,
   },
   {
@@ -94,6 +104,27 @@ export const IMPACT_CONFIGS: ImpactConfigWithIcon[] = [
     keywords: ['warhead'],
     fallbackMagnitude: '12+',
     fallbackAnnotation: 'Senior personnel losses disrupt expertise.',
+    category: 'Weaponization Capabilities',
     Icon: Users,
+  },
+  {
+    id: 'uranium-metal',
+    label: 'Weapons-grade uranium metal production',
+    descriptor: 'Manufacturing eliminated',
+    keywords: [],
+    fallbackMagnitude: 'Eliminated',
+    fallbackAnnotation: 'Manufacturing pathway eliminated, disrupting supply of weapon cores.',
+    category: 'Weaponization Capabilities',
+    Icon: Shield,
+  },
+  {
+    id: 'administrative-centers',
+    label: 'Program administrative centers',
+    descriptor: 'Command hubs',
+    keywords: [],
+    fallbackMagnitude: 'Dismantled',
+    fallbackAnnotation: 'Command and coordination hubs dismantled, slowing decision cycles.',
+    category: 'Weaponization Capabilities',
+    Icon: Building,
   },
 ];
