@@ -203,7 +203,13 @@ const StatusChartsSection: React.FC<StatusChartsSectionProps> = ({ facilityData,
   const fuelProductionChart = useMemo(() => createChartModel('fuel-production'), [facilityData]);
   const weaponizationChart = useMemo(() => createChartModel('fuel-weaponization'), [facilityData]);
 
-  const getGridColumns = (totalCount: number) => {
+  const getGridColumns = (totalCount: number, isMobile: boolean) => {
+    if (isMobile) {
+      if (totalCount > 80) return 8;
+      if (totalCount > 50) return 7;
+      if (totalCount > 30) return 6;
+      return 5;
+    }
     if (totalCount > 120) return 12;
     if (totalCount > 80) return 10;
     if (totalCount > 60) return 9;
@@ -213,13 +219,16 @@ const StatusChartsSection: React.FC<StatusChartsSectionProps> = ({ facilityData,
   };
 
   const baseTileSize = 26;
+  const mobileTileSize = 20;
   const tileGap = 4;
+  const mobileGap = 3;
 
   const activeStatusSet = useMemo(() => new Set(activeStatuses), [activeStatuses]);
 
   const renderWaffleChart = (chartData: ReturnType<typeof createChartModel>, title: string, subtitle: string) => {
     const { tiles, totalCount } = chartData;
-    const gridColumns = getGridColumns(totalCount);
+    const gridColumns = getGridColumns(totalCount, false);
+    const mobileGridColumns = getGridColumns(totalCount, true);
 
     const waffleGridStyle: React.CSSProperties = {
       gridTemplateColumns: `repeat(${gridColumns}, ${baseTileSize}px)`,
@@ -227,22 +236,29 @@ const StatusChartsSection: React.FC<StatusChartsSectionProps> = ({ facilityData,
       gap: `${tileGap}px`,
     };
 
+    const mobileWaffleGridStyle: React.CSSProperties = {
+      gridTemplateColumns: `repeat(${mobileGridColumns}, ${mobileTileSize}px)`,
+      gridAutoRows: `${mobileTileSize}px`,
+      gap: `${mobileGap}px`,
+    };
+
     return (
-      <div className="flex-1 min-w-[400px]">
-        <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+      <div className="flex-1 min-w-0">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap items-start justify-between gap-2 sm:gap-4 mb-4 sm:mb-6">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-            <p className="text-sm text-gray-600">{subtitle}</p>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900">{title}</h3>
+            <p className="text-xs sm:text-sm text-gray-600">{subtitle}</p>
           </div>
-          <div className="text-right">
-            <span className="text-xs uppercase tracking-wide text-gray-500 block">Total Sites</span>
-            <span className="text-3xl font-bold text-gray-900">{totalCount}</span>
+          <div className="text-left sm:text-right">
+            <span className="text-[10px] sm:text-xs uppercase tracking-wide text-gray-500 block">Total Sites</span>
+            <span className="text-2xl sm:text-3xl font-bold text-gray-900">{totalCount}</span>
           </div>
         </div>
 
-        <div className="relative overflow-visible rounded-xl border border-gray-100 bg-gray-50 p-8 flex justify-center">
+        <div className="relative overflow-visible rounded-xl border border-gray-100 bg-gray-50 p-4 sm:p-8 flex justify-center">
           <div className="relative">
-            <div className="grid" style={waffleGridStyle}>
+            {/* Desktop grid */}
+            <div className="hidden sm:grid" style={waffleGridStyle}>
               {tiles.map((tile, index) => {
                 const definition = STATUS_LOOKUP[tile.statusKey];
                 const isFocused = activeStatusSet.has(tile.statusKey);
@@ -290,8 +306,29 @@ const StatusChartsSection: React.FC<StatusChartsSectionProps> = ({ facilityData,
               })}
             </div>
 
+            {/* Mobile grid */}
+            <div className="grid sm:hidden" style={mobileWaffleGridStyle}>
+              {tiles.map((tile, index) => {
+                const definition = STATUS_LOOKUP[tile.statusKey];
+                const isFocused = activeStatusSet.has(tile.statusKey);
+                const opacity = isFocused ? 1 : 0.25;
+
+                return (
+                  <div
+                    key={`mobile-${tile.id || `tile-${index}`}`}
+                    className="rounded-sm transition-opacity duration-200"
+                    style={{
+                      backgroundColor: definition.color,
+                      opacity,
+                    }}
+                    title={`${tile.location} - ${definition.label}`}
+                  />
+                );
+              })}
+            </div>
+
             {tiles.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-8 sm:py-12 text-gray-500 text-sm">
                 No facilities match the current filters.
               </div>
             )}
@@ -312,29 +349,29 @@ const StatusChartsSection: React.FC<StatusChartsSectionProps> = ({ facilityData,
   }
 
   return (
-    <section className="max-w-7xl mx-auto px-6 py-8">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
       <div className="bg-white">
-        <div className="flex items-center gap-3 mb-8">
-          <BarChart3 className="w-6 h-6 text-gray-700" />
+        <div className="flex items-start sm:items-center gap-3 mb-6 sm:mb-8">
+          <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 flex-shrink-0 mt-0.5 sm:mt-0" />
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Facility Status Overview</h2>
-            <p className="text-sm text-gray-600">
-              Isometric chart showing individual facilities by category. Each square represents one facility. Use the filters above to explore different statuses.
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Facility Status Overview</h2>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1">
+              Each square represents one facility. Use the filters to explore different statuses.
             </p>
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col gap-6 sm:gap-8 lg:flex-row">
           {renderWaffleChart(
             fuelProductionChart,
             'Fuel Production',
-            'Facilities involved in uranium enrichment and fuel cycle'
+            'Uranium enrichment and fuel cycle'
           )}
 
           {renderWaffleChart(
             weaponizationChart,
             'Weaponization',
-            'Facilities involved in weapons development and assembly'
+            'Weapons development and assembly'
           )}
         </div>
       </div>

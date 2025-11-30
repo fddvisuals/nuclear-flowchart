@@ -4,6 +4,7 @@ import SVGViewer from '../SVGViewer';
 import StatusChartsSection from '../StatusChartsSection';
 import DamageSummaryGrid from '../DamageSummaryGrid';
 import StickyFilterPanel from '../StickyFilterPanel';
+import MobileFilterDrawer from '../MobileFilterDrawer';
 import InteractiveTutorial from '../InteractiveTutorial';
 import { FilterType } from '../../data/nuclearData';
 import { loadFacilityData, FacilityData } from '../../utils/csvLoader';
@@ -94,20 +95,20 @@ function NuclearVisualization({
   );
 
   return (
-    <section className="max-w-7xl mx-auto px-6 py-8">
-      <div className={`${isExpanded ? 'fixed inset-4 z-[1001] flex flex-col' : 'p-6'}`}>
-        <div className={`flex items-center justify-between ${isExpanded ? 'p-6 border-b' : 'mb-6'}`}>
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <div className={`${isExpanded ? 'fixed top-[140px] left-4 right-4 bottom-4 z-[990] flex flex-col bg-white rounded-xl shadow-2xl border border-slate-200' : ''}`}>
+        <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${isExpanded ? 'p-4 sm:p-6 border-b' : 'mb-4 sm:mb-6'}`}>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Interactive Supply Chain Flowchart</h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Explore the nuclear program's supply chain. Click nodes to highlight related facilities, or use filters to focus on specific categories and statuses.
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Supply Chain Flowchart</h2>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1">
+              Explore Iran's nuclear program supply chain. Use filter buttons to focus on specific categories and site statuses.
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {onToggleLocations && (
               <button
                 onClick={onToggleLocations}
-                className="px-4 py-2 flex items-center gap-2 rounded-lg transition-colors whitespace-nowrap bg-gray-100 text-gray-700 hover:bg-gray-200"
+                className="px-3 sm:px-4 py-2 flex items-center gap-2 rounded-lg transition-colors whitespace-nowrap bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm"
                 title={showLocations ? 'Hide Locations (Collapsed View)' : 'Show Locations (Detailed View)'}
               >
                 {showLocations ? 'Hide Locations' : 'Show Locations'}
@@ -116,7 +117,7 @@ function NuclearVisualization({
             {onToggleExpand && (
               <button
                 onClick={onToggleExpand}
-                className="px-4 py-2 flex items-center gap-2 rounded-lg transition-colors whitespace-nowrap bg-blue-100 text-blue-700 hover:bg-blue-200"
+                className="hidden sm:flex px-4 py-2 items-center gap-2 rounded-lg transition-colors whitespace-nowrap bg-blue-100 text-blue-700 hover:bg-blue-200 text-sm"
                 title={isExpanded ? 'Exit Fullscreen' : 'Fullscreen'}
               >
                 {isExpanded ? (
@@ -137,8 +138,8 @@ function NuclearVisualization({
 
         <div
           ref={flowchartContainerRef}
-          className={`relative bg-white border border-gray-100 rounded-xl overflow-hidden ${isExpanded ? 'flex-1 m-6 mt-0' : ''}`}
-          style={{ height: isExpanded ? 'auto' : '2000px' }}
+          className={`relative bg-white border border-gray-100 rounded-xl overflow-hidden ${isExpanded ? 'flex-1 m-4 sm:m-6 mt-0' : ''}`}
+          style={{ height: isExpanded ? 'auto' : 'min(2000px, 80vh)' }}
         >
           <SVGViewer
             activeFilters={activeFilters ?? ['all']}
@@ -161,6 +162,21 @@ export function NuclearFlowchartPage() {
   const [isVisualizationExpanded, setIsVisualizationExpanded] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [activeMainView, setActiveMainView] = useState<'flowchart' | 'stack'>('stack');
+  const [animateFlowchartTab, setAnimateFlowchartTab] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+  // Animate flowchart tab once to draw attention
+  useEffect(() => {
+    const hasAnimated = sessionStorage.getItem('flowchartTabAnimated');
+    if (!hasAnimated) {
+      const timer = setTimeout(() => {
+        setAnimateFlowchartTab(true);
+        sessionStorage.setItem('flowchartTabAnimated', 'true');
+        setTimeout(() => setAnimateFlowchartTab(false), 2500); // Animate for 2.5 seconds
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   // Load facility data
   useEffect(() => {
@@ -179,6 +195,23 @@ export function NuclearFlowchartPage() {
       }, 1000);
       return () => clearTimeout(timer);
     }
+  }, []);
+
+  // Track scroll position to show/hide mobile filter button
+  useEffect(() => {
+    const handleScroll = () => {
+      const waffleSection = document.getElementById('waffle-chart-section');
+      if (waffleSection) {
+        const rect = waffleSection.getBoundingClientRect();
+        const navHeight = 60; // Mobile nav height
+        setShowMobileFilters(rect.top < navHeight);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial check
+    
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const systemSummary = useMemo(() => buildSystemSummary(facilityData, IMPACT_CONFIGS), [facilityData]);
@@ -215,12 +248,23 @@ export function NuclearFlowchartPage() {
       {showTutorial && <InteractiveTutorial onComplete={handleTutorialComplete} />}
 
       <Navigation onHelpClick={handleRestartTutorial} />
+      
+      {/* Desktop sticky filter panel */}
       <StickyFilterPanel
         activeFilters={activeFilters}
         onFiltersChange={handleFiltersChange}
         targetSectionIds={['waffle-chart-section', 'primary-view-section']}
+        forceVisible={isVisualizationExpanded}
       />
-      <div className="flex flex-col items-center justify-center pt-20">
+      
+      {/* Mobile filter drawer */}
+      <MobileFilterDrawer
+        activeFilters={activeFilters}
+        onFiltersChange={handleFiltersChange}
+        isVisible={showMobileFilters && !isVisualizationExpanded}
+      />
+      
+      <div className="flex flex-col items-center justify-center pt-16 sm:pt-20">
         <Header />
       </div>
       <TextSection />
@@ -233,39 +277,48 @@ export function NuclearFlowchartPage() {
               externalFilters={activeFilters}
             />
           </div>
-          <div className="max-w-7xl mx-auto px-6 mt-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 flex justify-center">
             <div
               role="tablist"
               aria-label="Primary visualization view"
-              className="inline-flex rounded-full border border-slate-200 bg-slate-100 p-1"
+              className="inline-flex rounded-full border border-slate-200 bg-slate-100 p-1 sm:p-1.5"
             >
               {[
                 {
                   id: 'stack',
                   label: 'Stack View',
+                  shortLabel: 'Stack',
                   description: 'System-Level Damage Summary',
+                  shortDescription: 'Damage Summary',
                 },
                 {
                   id: 'flowchart',
                   label: 'Flowchart View',
-                  description: 'Interactive Supply Chain Flowchart',
+                  shortLabel: 'Flowchart',
+                  description: 'Supply Chain Flowchart',
+                  shortDescription: 'Supply Chain',
                 },
               ].map((tab) => {
                 const isActive = activeMainView === tab.id;
+                const isFlowchart = tab.id === 'flowchart';
+                const shouldAnimate = isFlowchart && animateFlowchartTab;
+
                 return (
                   <button
                     key={tab.id}
                     role="tab"
                     aria-selected={isActive}
-                    className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors whitespace-nowrap ${isActive
+                    className={`px-4 sm:px-10 py-2.5 sm:py-4 text-sm sm:text-lg font-semibold rounded-full transition-all duration-500 whitespace-nowrap ${isActive
                         ? 'bg-white text-blue-900 shadow-sm'
                         : 'text-slate-600 hover:text-slate-900'
-                      }`}
+                      } ${shouldAnimate ? 'bg-gradient-to-r from-blue-50 via-blue-100 to-blue-50 animate-pulse' : ''}`}
                     onClick={() => setActiveMainView(tab.id as 'flowchart' | 'stack')}
                   >
-                    <span className="block leading-tight">{tab.label}</span>
-                    <span className="block text-[11px] font-normal text-slate-500">
-                      {tab.description}
+                    <span className="block leading-tight sm:hidden">{tab.shortLabel}</span>
+                    <span className="hidden sm:block leading-tight">{tab.label}</span>
+                    <span className="block text-[10px] sm:text-sm font-normal text-slate-500 mt-0.5 sm:mt-1">
+                      <span className="sm:hidden">{tab.shortDescription}</span>
+                      <span className="hidden sm:inline">{tab.description}</span>
                     </span>
                   </button>
                 );
@@ -308,6 +361,9 @@ export function NuclearFlowchartPage() {
       </div>
 
       {!isVisualizationExpanded && <FDDFooter />}
+      
+      {/* Bottom padding for mobile filter button */}
+      <div className="h-20 md:hidden" />
     </div>
   );
 }

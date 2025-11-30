@@ -14,7 +14,7 @@ const renderParagraphs = (content: string) => {
   return paragraphs.map((paragraph, index) => (
     <p
       key={index}
-      className="text-lg text-gray-700 leading-relaxed mb-6"
+      className="text-base sm:text-lg text-gray-700 leading-relaxed mb-4 sm:mb-6"
       dangerouslySetInnerHTML={{ __html: paragraph }}
     />
   ));
@@ -33,9 +33,9 @@ Iran may seek to recover buried assets and reconstitute its capabilities to buil
   width
 }: TextSectionProps) {
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
       <div 
-        className="prose prose-lg max-w-none"
+        className="prose prose-sm sm:prose-lg max-w-none"
         style={width ? { maxWidth: width } : undefined}
       >
         {renderParagraphs(content)}

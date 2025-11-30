@@ -322,6 +322,38 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
     setIsDragging(false);
   }, []);
 
+  // Touch event handlers for mobile
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      setIsDragging(true);
+      setDragStart({
+        x: touch.clientX,
+        y: touch.clientY,
+        transformX: transform.x,
+        transformY: transform.y
+      });
+    }
+  }, [transform]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isDragging || e.touches.length !== 1) return;
+    
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - dragStart.x;
+    const deltaY = touch.clientY - dragStart.y;
+
+    setTransform(prev => ({
+      ...prev,
+      x: dragStart.transformX + deltaX,
+      y: dragStart.transformY + deltaY
+    }));
+  }, [isDragging, dragStart]);
+
+  const handleTouchEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
   const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
 
@@ -421,12 +453,15 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`w-full h-full overflow-hidden ${isDragging ? 'cursor-grabbing' : 'cursor-grab'
+      className={`w-full h-full overflow-hidden touch-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'
         }`}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       {svgContent ? (
         <div
@@ -443,22 +478,22 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
         </div>
       )}
 
-      <div className="absolute top-4 right-4 flex flex-col gap-2">
+      <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex flex-col gap-1.5 sm:gap-2">
         <button
           onClick={() => setTransform(prev => ({ ...prev, scale: Math.min(5, prev.scale * 1.2) }))}
-          className="w-10 h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 flex items-center justify-center text-lg font-bold"
+          className="w-9 h-9 sm:w-10 sm:h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 active:bg-gray-100 flex items-center justify-center text-base sm:text-lg font-bold"
         >
           +
         </button>
         <button
           onClick={() => setTransform(prev => ({ ...prev, scale: Math.max(0.1, prev.scale * 0.8) }))}
-          className="w-10 h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 flex items-center justify-center text-lg font-bold"
+          className="w-9 h-9 sm:w-10 sm:h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 active:bg-gray-100 flex items-center justify-center text-base sm:text-lg font-bold"
         >
           −
         </button>
         <button
           onClick={fitToScreen}
-          className="px-3 h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 flex items-center justify-center text-xs font-semibold whitespace-nowrap"
+          className="px-2 sm:px-3 h-9 sm:h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 active:bg-gray-100 flex items-center justify-center text-[10px] sm:text-xs font-semibold whitespace-nowrap"
           title="Fit to screen"
         >
           Fit

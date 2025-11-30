@@ -38,17 +38,24 @@ interface StickyFilterPanelProps {
   activeFilters: FilterType[];
   onFiltersChange: (filters: FilterType[]) => void;
   targetSectionIds?: string[]; // IDs of the sections to watch for scroll
+  forceVisible?: boolean;
 }
 
 const StickyFilterPanel: React.FC<StickyFilterPanelProps> = ({
   activeFilters,
   onFiltersChange,
-  targetSectionIds = ['waffle-chart-section', 'visualization-section']
+  targetSectionIds = ['waffle-chart-section', 'visualization-section'],
+  forceVisible = false
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredStatus, setHoveredStatus] = useState<string | null>(null);
 
   useEffect(() => {
+    if (forceVisible) {
+      setIsVisible(true);
+      return;
+    }
+
     const targetSections = targetSectionIds
       .map(id => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null);
@@ -79,7 +86,7 @@ const StickyFilterPanel: React.FC<StickyFilterPanelProps> = ({
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [targetSectionIds]);
+  }, [targetSectionIds, forceVisible]);
 
   const handleFilterToggle = (filter: FilterType) => {
     if (filter === 'all') {
@@ -105,7 +112,7 @@ const StickyFilterPanel: React.FC<StickyFilterPanelProps> = ({
   return (
     <div
       id="sticky-filter-panel"
-      className={`fixed top-[75px] left-0 w-full z-[999] transition-all duration-300 ${isVisible
+      className={`fixed top-[75px] left-0 w-full z-[999] transition-all duration-300 hidden md:block ${isVisible
         ? 'translate-y-0 opacity-100'
         : '-translate-y-full opacity-0 pointer-events-none'
         }`}

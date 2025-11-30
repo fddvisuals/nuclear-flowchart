@@ -160,16 +160,16 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
   }
 
   return (
-    <section className="max-w-7xl mx-auto px-6 py-8">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
       {showImpactSection && (
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-5 mb-8">
-          <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 text-blue-700 rounded-lg">
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 sm:p-5 mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start justify-between gap-3 mb-4">
+            <div className="flex items-start sm:items-center gap-3">
+              <div className="p-2 bg-blue-100 text-blue-700 rounded-lg flex-shrink-0">
                 <Crosshair className="w-4 h-4" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                   Strikes Disrupt Key Nodes Across the Program
                 </h2>
                 <p className="text-xs text-gray-600 max-w-2xl mt-0.5">
@@ -189,7 +189,7 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
             )}
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
             {['Centrifuge Infrastructure', 'Uranium Fuel Production', 'Plutonium Pathway', 'Weaponization Capabilities'].map((category, index) => {
               const summaries = groupedSummaries[category];
               if (!summaries || summaries.length === 0) return null;
@@ -288,11 +288,11 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
 
       {showSystemGrid && (
         <>
-          <div className="flex items-baseline justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 sm:gap-4 mb-4 sm:mb-6">
             <div>
-              <h3 className="text-2xl font-bold text-gray-900">System-Level Damage Summary</h3>
-              <p className="text-sm text-gray-600 mt-1">
-                Color-coded cells show current status at each location. Hover to inspect details.
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900">System-Level Damage Summary</h3>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                Color-coded cells show current status at each location. Tap to inspect details.
               </p>
             </div>
             <div className="text-xs text-gray-500">
@@ -300,20 +300,20 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
             </div>
           </div>
 
-          <div className="space-y-10">
+          <div className="space-y-8 sm:space-y-10">
             {['Centrifuge Infrastructure', 'Uranium Fuel Production', 'Plutonium Pathway', 'Nuclear Energy Production', 'Weaponization', 'Other'].map((category) => {
               const systems = filteredGroupedSystems.filter(s => s.displayCategory === category);
               if (systems.length === 0) return null;
 
               return (
                 <div key={category}>
-                  <h4 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2 flex items-center gap-2">
+                  <h4 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 border-b border-gray-200 pb-2 flex items-center gap-2">
                     {category}
                     <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
                       {systems.length}
                     </span>
                   </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                     {systems.map((system) => {
                       const totalLocations = system.locations.length;
                       const isFocusActive = Boolean(activeImpact);
@@ -344,21 +344,21 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
                               : '0 10px 24px rgba(15, 23, 42, 0.08)',
                           }}
                         >
-                          <div className="flex items-start justify-between gap-2 mb-3">
+                          <div className="flex items-start justify-between gap-2 mb-2 sm:mb-3">
                             <div className="space-y-0.5 flex-1 min-w-0">
-                              <p className="text-[10px] uppercase tracking-wide font-semibold text-gray-500">
+                              <p className="text-[9px] sm:text-[10px] uppercase tracking-wide font-semibold text-gray-500">
                                 {system.mainCategory}
                               </p>
-                              <h3 className="text-sm font-semibold text-gray-900 leading-tight line-clamp-2">
+                              <h3 className="text-xs sm:text-sm font-semibold text-gray-900 leading-tight line-clamp-2">
                                 {system.name}
                               </h3>
                             </div>
-                            <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-gray-100 text-gray-700 whitespace-nowrap flex-shrink-0">
+                            <span className="px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold rounded-full bg-gray-100 text-gray-700 whitespace-nowrap flex-shrink-0">
                               {totalLocations}
                             </span>
                           </div>
 
-                          <div className="grid grid-cols-12 gap-1 content-start">
+                          <div className="grid grid-cols-10 sm:grid-cols-12 gap-1 content-start">
                             {[...system.locations]
                               .sort((a, b) => {
                                 // Sort by status in the order: destroyed, likely-destroyed, construction, unknown, operational
@@ -376,18 +376,18 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
                                       src={`${import.meta.env.BASE_URL}images/${location.statusMeta.key}.svg`}
                                       alt={tooltipLabel}
                                       tabIndex={0}
-                                      className="w-5 h-5 cursor-help transition-all hover:scale-125 hover:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 focus-visible:z-10"
+                                      className="w-4 h-4 sm:w-5 sm:h-5 cursor-help transition-all hover:scale-125 hover:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 focus-visible:z-10"
                                     />
                                     <span className="pointer-events-none absolute left-1/2 top-full hidden h-2 w-2 -translate-x-1/2 -translate-y-1 rotate-45 border border-slate-700 border-t-0 border-l-0 bg-slate-900 shadow-lg group-hover:block group-focus-within:block" />
-                                    <div className="pointer-events-none absolute left-1/2 top-full z-30 hidden w-64 -translate-x-1/2 translate-y-2 rounded-md border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-100 shadow-xl group-hover:flex group-focus-within:flex flex-col gap-1.5">
-                                      <span className="text-sm font-semibold text-white leading-tight">
+                                    <div className="pointer-events-none absolute left-1/2 top-full z-30 hidden w-56 sm:w-64 -translate-x-1/2 translate-y-2 rounded-md border border-slate-700 bg-slate-900 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-slate-100 shadow-xl group-hover:flex group-focus-within:flex flex-col gap-1 sm:gap-1.5">
+                                      <span className="text-xs sm:text-sm font-semibold text-white leading-tight">
                                         {location.locationName}
                                       </span>
-                                      <div className="mt-1.5 flex items-center justify-between gap-3 text-xs">
+                                      <div className="mt-1 sm:mt-1.5 flex items-center justify-between gap-3 text-[10px] sm:text-xs">
                                         <span className="text-slate-400">Status</span>
                                         <span className="inline-flex items-center gap-1.5 font-semibold text-white">
                                           <span
-                                            className="h-2.5 w-2.5 rounded-full border border-white/20"
+                                            className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full border border-white/20"
                                             style={{ backgroundColor: location.statusMeta.color }}
                                           />
                                           {location.statusText}
