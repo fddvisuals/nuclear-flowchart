@@ -352,11 +352,13 @@ const StatusChartsSection: React.FC<StatusChartsSectionProps> = ({ facilityData,
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
       <div className="bg-white">
         <div className="flex items-start sm:items-center gap-3 mb-6 sm:mb-8">
-          <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 flex-shrink-0 mt-0.5 sm:mt-0" />
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Facility Status Overview</h2>
+            <h2 className="text-xl sm:text-2xl font-black text-gray-900 uppercase">Facility Status Overview</h2>
             <p className="text-xs sm:text-sm text-gray-600 mt-1">
-              Each square represents one facility. Use the filters to explore different statuses.
+              The charts below show Iran’s work toward building a nuclear bomb divided into two primary categories: the various stages necessary to process mined
+              uranium into highly enriched fuel (Fuel Production), and the steps that must be taken to assemble a bomb with that fuel (weaponization). Each square
+              represents a facility that was targeted by Israeli airstrikes, or combined strikes with the United States. Red squares are destroyed facilities, green squares
+              represent those that are still fully functional. The blue squares represent facilities where the status is unknown.
             </p>
           </div>
         </div>
@@ -365,13 +367,13 @@ const StatusChartsSection: React.FC<StatusChartsSectionProps> = ({ facilityData,
           {renderWaffleChart(
             fuelProductionChart,
             'Fuel Production',
-            'Uranium enrichment and fuel cycle'
+            'Facilities involved in uranium enrichment and the fuel cycle'
           )}
 
           {renderWaffleChart(
             weaponizationChart,
             'Weaponization',
-            'Weapons development and assembly'
+            'Facilities involved in weapons development and assembly'
           )}
         </div>
       </div>

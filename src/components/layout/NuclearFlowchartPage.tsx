@@ -6,6 +6,7 @@ import DamageSummaryGrid from '../DamageSummaryGrid';
 import StickyFilterPanel from '../StickyFilterPanel';
 import MobileFilterDrawer from '../MobileFilterDrawer';
 import InteractiveTutorial from '../InteractiveTutorial';
+import { InfoTooltip } from '../InfoTooltip';
 import { FilterType } from '../../data/nuclearData';
 import { loadFacilityData, FacilityData } from '../../utils/csvLoader';
 import { buildSystemSummary, SystemSummaryResult } from '../../utils/systemSummary';
@@ -99,9 +100,13 @@ function NuclearVisualization({
       <div className={`${isExpanded ? 'fixed top-[140px] left-4 right-4 bottom-4 z-[990] flex flex-col bg-white rounded-xl shadow-2xl border border-slate-200' : ''}`}>
         <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${isExpanded ? 'p-4 sm:p-6 border-b' : 'mb-4 sm:mb-6'}`}>
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Supply Chain Flowchart</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl sm:text-2xl font-black text-gray-900 uppercase">Supply Chain Flowchart</h2>
+              <InfoTooltip text="Thanks to 12 days of strikes by Israel and the United States, Iran's ability to build a nuclear weapon has been degraded. To create a bomb, it is necessary to follow precise steps, from mining uranium to enriching it to then building the bomb itself. The flowchart below demonstrates the step-by-step, facility-by-facility challenges Iran now faces to building weapon." />
+            </div>
             <p className="text-xs sm:text-sm text-gray-600 mt-1">
-              Explore Iran's nuclear program supply chain. Use filter buttons to focus on specific categories and site statuses.
+              Navigate the nuclear supply-chain flowchart to see what parts of the Iran nuclear program still functional and what parts aren’t 
+— and how they fit together. Zoom with the scroll wheel, pan by dragging, and click the expand button for fullscreen mode.
             </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
@@ -277,7 +282,8 @@ export function NuclearFlowchartPage() {
               externalFilters={activeFilters}
             />
           </div>
-          <div id="view-tabs-container" className="max-w-7xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 flex justify-center">
+          <div id="view-tabs-container" className="max-w-7xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 flex flex-col items-center gap-3">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-700">Two Ways to Understand the Destruction Caused by the Strikes</h3>
             <div
               role="tablist"
               aria-label="Primary visualization view"
@@ -286,9 +292,9 @@ export function NuclearFlowchartPage() {
               {[
                 {
                   id: 'stack',
-                  label: 'Stack View',
+                  label: 'List',
                   shortLabel: 'Stack',
-                  description: 'System-Level Damage Summary',
+                  description: 'Status of Iran\'s Nuclear Facilities',
                   shortDescription: 'Damage Summary',
                 },
                 {

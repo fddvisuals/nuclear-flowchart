@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { FilterType } from '../data/nuclearData';
 import { loadFacilityData, FacilityData, getFacilityById } from '../utils/csvLoader';
+import { Map } from 'lucide-react';
 
 interface SVGViewerProps {
   activeFilters: FilterType[];
@@ -9,6 +10,131 @@ interface SVGViewerProps {
   showLocations?: boolean;
   focusedFacilityIds?: string[];
 }
+
+// Mini-map component
+interface MiniMapProps {
+  svgContent: string;
+  transform: { x: number; y: number; scale: number };
+  containerWidth: number;
+  containerHeight: number;
+  svgWidth: number;
+  svgHeight: number;
+  onNavigate: (x: number, y: number) => void;
+}
+
+const MiniMap: React.FC<MiniMapProps> = ({
+  svgContent,
+  transform,
+  containerWidth,
+  containerHeight,
+  svgWidth,
+  svgHeight,
+  onNavigate,
+}) => {
+  const miniMapRef = useRef<HTMLDivElement>(null);
+  const [isExpanded, setIsExpanded] = useState(true);
+  
+  // Mini-map dimensions - fit entire SVG within constraints
+  const maxMiniMapWidth = 140;
+  const maxMiniMapHeight = 250;
+  
+  // Calculate scale to fit entire SVG within max dimensions
+  const scaleByWidth = maxMiniMapWidth / svgWidth;
+  const scaleByHeight = maxMiniMapHeight / svgHeight;
+  const miniMapScale = Math.min(scaleByWidth, scaleByHeight);
+  
+  // Actual dimensions based on the scale
+  const miniMapWidth = svgWidth * miniMapScale;
+  const miniMapHeight = svgHeight * miniMapScale;
+  
+  // Calculate viewport rectangle in mini-map coordinates
+  const viewportWidth = (containerWidth / transform.scale) * miniMapScale;
+  const viewportHeight = (containerHeight / transform.scale) * miniMapScale;
+  const viewportX = (-transform.x / transform.scale) * miniMapScale;
+  const viewportY = (-transform.y / transform.scale) * miniMapScale;
+  
+  const handleMiniMapClick = useCallback((e: React.MouseEvent) => {
+    if (!miniMapRef.current) return;
+    
+    const rect = miniMapRef.current.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+    
+    // Convert click position to SVG coordinates
+    const svgX = clickX / miniMapScale;
+    const svgY = clickY / miniMapScale;
+    
+    // Calculate new transform to center the clicked position
+    const newX = -(svgX * transform.scale) + containerWidth / 2;
+    const newY = -(svgY * transform.scale) + containerHeight / 2;
+    
+    onNavigate(newX, newY);
+  }, [miniMapScale, transform.scale, containerWidth, containerHeight, onNavigate]);
+
+  const handleMiniMapDrag = useCallback((e: React.MouseEvent) => {
+    if (e.buttons !== 1) return; // Only handle left mouse button
+    handleMiniMapClick(e);
+  }, [handleMiniMapClick]);
+
+  if (!isExpanded) {
+    return (
+      <button
+        onClick={() => setIsExpanded(true)}
+        className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 w-9 h-9 sm:w-10 sm:h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 flex items-center justify-center z-10"
+        title="Show mini-map"
+      >
+        <Map className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+      </button>
+    );
+  }
+
+  return (
+    <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white border border-gray-300 rounded-lg shadow-lg overflow-hidden z-10">
+      <div className="flex items-center justify-between px-2 py-1 bg-gray-50 border-b border-gray-200">
+        <span className="text-[10px] sm:text-xs font-medium text-gray-600">Mini-map</span>
+        <button
+          onClick={() => setIsExpanded(false)}
+          className="text-gray-400 hover:text-gray-600 text-xs leading-none"
+          title="Hide mini-map"
+        >
+          ✕
+        </button>
+      </div>
+      <div
+        ref={miniMapRef}
+        className="relative cursor-crosshair overflow-hidden"
+        style={{ width: miniMapWidth, height: miniMapHeight }}
+        onClick={handleMiniMapClick}
+        onMouseMove={handleMiniMapDrag}
+      >
+        {/* SVG thumbnail */}
+        <div
+          className="absolute opacity-70 pointer-events-none"
+          style={{
+            width: svgWidth,
+            height: svgHeight,
+            transform: `scale(${miniMapScale})`,
+            transformOrigin: '0 0',
+            left: 0,
+            top: 0,
+          }}
+          dangerouslySetInnerHTML={{ __html: svgContent }}
+        />
+        
+        {/* Viewport indicator */}
+        <div
+          className="absolute border-2 border-blue-500 bg-blue-500/20 pointer-events-none"
+          style={{
+            left: Math.max(0, viewportX),
+            top: Math.max(0, viewportY),
+            width: Math.min(viewportWidth, miniMapWidth - Math.max(0, viewportX)),
+            height: Math.min(viewportHeight, miniMapHeight - Math.max(0, viewportY)),
+          }}
+        />
+      </div>
+    </div>
+  );
+};
 
 const SVGViewer: React.FC<SVGViewerProps> = ({
   activeFilters,
@@ -23,6 +149,34 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
   const [transform, setTransform] = useState({ x: 0, y: 0, scale: 1 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0, transformX: 0, transformY: 0 });
+  const [svgDimensions, setSvgDimensions] = useState({ width: 2247, height: 5174 });
+  const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
+
+  // Handle mini-map navigation
+  const handleMiniMapNavigate = useCallback((x: number, y: number) => {
+    setTransform(prev => ({ ...prev, x, y }));
+  }, []);
+
+  // Track container dimensions
+  useEffect(() => {
+    if (!containerRef.current) return;
+    
+    const updateContainerDimensions = () => {
+      if (containerRef.current) {
+        setContainerDimensions({
+          width: containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight,
+        });
+      }
+    };
+    
+    updateContainerDimensions();
+    
+    const resizeObserver = new ResizeObserver(updateContainerDimensions);
+    resizeObserver.observe(containerRef.current);
+    
+    return () => resizeObserver.disconnect();
+  }, []);
 
   // Load CSV data
   useEffect(() => {
@@ -420,12 +574,20 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
       }
     }
 
+    // Update SVG dimensions for mini-map
+    setSvgDimensions({ width: svgWidth, height: svgHeight });
+
+    // For tall images, fit to width and show top portion instead of fitting entire height
     const scaleX = containerWidth / svgWidth;
     const scaleY = containerHeight / svgHeight;
-    const scale = Math.min(scaleX, scaleY) * 0.95;
+    
+    // Use width-based scale for better default zoom on tall images
+    // This shows more detail and doesn't squish everything
+    const scale = scaleX * 0.9;
 
+    // Center horizontally, start from near the top
     const x = (containerWidth - svgWidth * scale) / 2;
-    const y = (containerHeight - svgHeight * scale) / 2;
+    const y = 20; // Small offset from top
 
     setTransform({ x, y, scale });
   }, []);
@@ -499,6 +661,19 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
           Fit
         </button>
       </div>
+
+      {/* Mini-map */}
+      {svgContent && containerDimensions.width > 0 && (
+        <MiniMap
+          svgContent={svgContent}
+          transform={transform}
+          containerWidth={containerDimensions.width}
+          containerHeight={containerDimensions.height}
+          svgWidth={svgDimensions.width}
+          svgHeight={svgDimensions.height}
+          onNavigate={handleMiniMapNavigate}
+        />
+      )}
     </div>
   );
 };

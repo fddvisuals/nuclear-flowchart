@@ -137,9 +137,9 @@ const StackView: React.FC<StackViewProps> = ({
       <div className="max-w-6xl mx-auto">
         <div className="flex items-baseline justify-between mb-6">
           <div>
-            <h3 className="text-2xl font-bold text-gray-900">System-Level Damage Summary</h3>
+            <h3 className="text-2xl font-bold text-gray-900 uppercase">System-Level Damage Summary</h3>
             <p className="text-sm text-gray-600 mt-1">
-              Color-coded cells show current status at each location. Hover to inspect details; click a cell to toggle related highlights in the flowchart.
+              The cards below contain information on the damage sustained by various aspects of Iran's nuclear program, divided into steps in the process of building a device. Hover over icons in the cards to get the status of individual locations.
             </p>
           </div>
           <div className="text-xs text-gray-500">
