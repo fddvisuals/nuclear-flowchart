@@ -245,7 +245,7 @@ export function NuclearFlowchartPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {showTutorial && <InteractiveTutorial onComplete={handleTutorialComplete} />}
+      {showTutorial && <InteractiveTutorial onComplete={handleTutorialComplete} onViewChange={setActiveMainView} />}
 
       <Navigation onHelpClick={handleRestartTutorial} />
       
@@ -277,7 +277,7 @@ export function NuclearFlowchartPage() {
               externalFilters={activeFilters}
             />
           </div>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 flex justify-center">
+          <div id="view-tabs-container" className="max-w-7xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 flex justify-center">
             <div
               role="tablist"
               aria-label="Primary visualization view"

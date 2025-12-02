@@ -98,10 +98,10 @@ const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({
 
   return (
     <>
-      {/* Mobile Filter Toggle Button - Fixed at bottom */}
+      {/* Mobile Filter Toggle Button - Fixed at bottom, hidden on desktop */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[998] flex items-center gap-2 px-5 py-3 rounded-full shadow-lg transition-all active:scale-95"
+        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[998] flex md:hidden items-center gap-2 px-5 py-3 rounded-full shadow-lg transition-all active:scale-95"
         style={{
           background: 'linear-gradient(135deg, #1b263b 0%, #162239 100%)',
           boxShadow: '0 8px 32px rgba(10, 19, 35, 0.45), 0 2px 8px rgba(0, 0, 0, 0.2)'

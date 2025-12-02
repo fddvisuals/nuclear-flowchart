@@ -1,5 +1,5 @@
 .headerImageContainer {
-  height: 400px;
+  height: 600px;
   position: relative;
   flex-shrink: 0;
   width: 1010px;
@@ -17,7 +17,7 @@
 }
 
 .featureImage {
-  background-image: url('/images/feature.png');
+  background-image: url("/images/Visual_IranPostStrikeAssessment_LargeIllustration_v06.jpg");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
@@ -50,7 +50,7 @@
   text-align: center;
   letter-spacing: -0.3px;
   text-transform: none;
-  font-family: 'URW DIN', sans-serif;
+  font-family: "URW DIN", sans-serif;
   font-weight: 600;
   font-size: 48px !important; /* Override global h1 styles */
 }
@@ -67,16 +67,15 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  
 }
 
 .subtitleText {
- display: flex;
+  display: flex;
   color: #00558c;
   text-align: center;
   letter-spacing: -0.3px;
   text-transform: uppercase;
-  font-family: 'URW DIN', sans-serif;
+  font-family: "URW DIN", sans-serif;
   font-weight: 600;
   font-size: 25px;
   line-height: 28px;
@@ -85,7 +84,7 @@
 .byline {
   display: flex;
   flex-direction: column;
-  font-family: 'Lato', sans-serif;
+  font-family: "Lato", sans-serif;
   font-style: italic;
   justify-content: center;
   position: relative;
@@ -103,7 +102,7 @@
 }
 
 .bylineBold {
-  font-family: 'Lato', sans-serif;
+  font-family: "Lato", sans-serif;
   font-weight: 700;
   font-style: italic;
 }
@@ -113,10 +112,8 @@
   height: 2px;
   flex-shrink: 0;
   width: 30px;
-  margin-top: 10px /* Equal spacing above and below */
+  margin-top: 10px; /* Equal spacing above and below */
 }
-
-
 
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
@@ -124,35 +121,35 @@
     height: 300px; /* Smaller image on mobile */
     width: 100%;
   }
-  
+
   .headerImage {
     height: 300px;
     width: 100%;
     background-size: cover; /* Better mobile fit */
     background-position: center;
   }
-  
+
   .featureImage {
     height: 300px;
     background-size: cover;
     background-position: center;
   }
-  
+
   .titleContainer {
     padding: 0 15px;
     gap: 10px;
   }
-  
+
   .mainTitle {
     font-size: 32px !important; /* Override global h1 styles */
-    font-weight: 900!important; /* Ensure consistent font weight */
+    font-weight: 900 !important; /* Ensure consistent font weight */
   }
-  
+
   .mainTitleText {
     line-height: 1.1;
     font-size: inherit !important;
   }
-  
+
   .subtitleText {
     font-size: 20px;
     line-height: 24px;
@@ -163,30 +160,30 @@
   .headerImageContainer {
     height: 250px;
   }
-  
+
   .headerImage {
     height: 250px;
   }
-  
+
   .featureImage {
     height: 250px;
   }
-  
+
   .titleContainer {
     padding: 0 10px;
     gap: 10px;
     max-width: 80%;
   }
-  
+
   .horizontalDivider {
     margin-top: 10px; /* Equal spacing above and below for mobile */
   }
-  
+
   .mainTitle {
     font-size: 32px; /* Increased from 28px to be clearly larger than subtitle */
-    font-weight: 900!important; /* Ensure consistent font weight */
+    font-weight: 900 !important; /* Ensure consistent font weight */
   }
-  
+
   .subtitleText {
     font-size: 18px;
     line-height: 22px;
