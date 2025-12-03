@@ -109,7 +109,7 @@ function NuclearVisualization({
 — and how they fit together. Zoom with the scroll wheel, pan by dragging, and click the expand button for fullscreen mode.
             </p>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap ml-auto">
             {onToggleLocations && (
               <button
                 onClick={onToggleLocations}
@@ -241,6 +241,14 @@ export function NuclearFlowchartPage() {
 
   const handleTutorialComplete = () => {
     setShowTutorial(false);
+    // Reset to stack view and scroll to top
+    setActiveMainView('stack');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Trigger flowchart tab animation after tutorial
+    setTimeout(() => {
+      setAnimateFlowchartTab(true);
+      setTimeout(() => setAnimateFlowchartTab(false), 2500);
+    }, 500);
   };
 
   const handleRestartTutorial = () => {
@@ -269,7 +277,7 @@ export function NuclearFlowchartPage() {
         isVisible={showMobileFilters && !isVisualizationExpanded}
       />
       
-      <div className="flex flex-col items-center justify-center pt-16 sm:pt-20">
+      <div className="flex flex-col items-center justify-center">
         <Header />
       </div>
       <TextSection />
@@ -365,6 +373,20 @@ export function NuclearFlowchartPage() {
           </div>
         )}
       </div>
+
+      {/* Data attribution note and credits */}
+      {!isVisualizationExpanded && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 text-center">
+          <p className="text-sm italic text-gray-500 mb-4">Data collected through December 2025</p>
+          <div className="w-[150px] h-px bg-gray-300 mx-auto mb-4" />
+          <div className="text-sm text-gray-600 space-y-1">
+            <p>Edited by <span className="font-bold">Jason Fields</span></p>
+            <p>Design by <span className="font-bold">Bella Besuud</span></p>
+            <p>Feature illustration by <span className="font-bold">Daniel Ackerman</span></p>
+            <p>Concept and Development by <span className="font-bold">Pavak Patel</span></p>
+          </div>
+        </div>
+      )}
 
       {!isVisualizationExpanded && <FDDFooter />}
       

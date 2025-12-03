@@ -640,6 +640,57 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
         </div>
       )}
 
+      {/* Navigation hint arrows - only show when content is hidden in that direction */}
+      {(() => {
+        const scaledWidth = svgDimensions.width * transform.scale;
+        const scaledHeight = svgDimensions.height * transform.scale;
+        const canScrollLeft = transform.x < 0;
+        const canScrollRight = transform.x + scaledWidth > containerDimensions.width;
+        const canScrollUp = transform.y < 0;
+        const canScrollDown = transform.y + scaledHeight > containerDimensions.height;
+        
+        return (
+          <>
+            {/* Left/Right arrows */}
+            <div className="absolute inset-0 pointer-events-none flex items-center justify-between px-2">
+              {canScrollLeft && (
+                <div className="text-blue-600 animate-pulse bg-white rounded-full p-2 shadow-md border border-gray-200">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </div>
+              )}
+              {!canScrollLeft && <div />}
+              {canScrollRight && (
+                <div className="text-blue-600 animate-pulse bg-white rounded-full p-2 shadow-md border border-gray-200">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              )}
+            </div>
+            {/* Top/Bottom arrows */}
+            <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-between py-2">
+              {canScrollUp && (
+                <div className="text-blue-600 animate-pulse bg-white rounded-full p-2 shadow-md border border-gray-200">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" />
+                  </svg>
+                </div>
+              )}
+              {!canScrollUp && <div />}
+              {canScrollDown && (
+                <div className="text-blue-600 animate-pulse bg-white rounded-full p-2 shadow-md border border-gray-200">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              )}
+            </div>
+          </>
+        );
+      })()}
+
       <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex flex-col gap-1.5 sm:gap-2">
         <button
           onClick={() => setTransform(prev => ({ ...prev, scale: Math.min(5, prev.scale * 1.2) }))}

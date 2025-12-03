@@ -292,7 +292,7 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
             <div>
               <h3 className="text-xl sm:text-2xl font-black text-gray-900 uppercase">System-Level Damage Summary</h3>
               <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                The cards below contain information on the damage sustained by various aspects of Iran's nuclear program, divided into steps in the process of building a device. Hover over icons in the cards to get the status of individual locations.
+                The boxes below contain information on the damage sustained by various aspects of Iran’s nuclear program, divided into the steps of the weapon-building process. Hover over the icons in the boxes to view the status of individual locations.
               </p>
             </div>
             <div className="text-xs text-gray-500">

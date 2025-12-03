@@ -6,6 +6,7 @@
   flex-shrink: 0;
   width: 100vw;
   margin-left: calc(-50vw + 50%);
+  margin-top: 60px; /* Account for fixed navbar */
   overflow: hidden;
 }
 

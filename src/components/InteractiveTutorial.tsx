@@ -55,7 +55,7 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete, o
     {
       id: 3,
       title: 'Nuclear Program Damage Flowchart',
-      description: 'Navigate the nuclear supply-chain flowchart to see what parts of the Iran nuclear program still functional and what parts aren’t — and how they fit together. Zoom with the scroll wheel, pan by dragging, and click the expand button for fullscreen mode.',
+      description: 'Navigate the nuclear supply-chain flowchart to see what parts of the Iran nuclear program are still functional and what parts aren’t — and how they fit together. Zoom with the scroll wheel, pan by dragging, and click the expand button for fullscreen mode.',
       icon: <MapPin className="w-6 h-6" />,
       targetElement: 'visualization-section',
       position: 'top',
@@ -72,7 +72,7 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete, o
     {
       id: 5,
       title: 'You\'re all set!',
-      description: 'Start exploring the data with filters, click on elements for details, and use fullscreen mode for detailed analysis.',
+      description: 'Start exploring',
       icon: <CheckCircle className="w-6 h-6" />,
       position: 'center',
     },
