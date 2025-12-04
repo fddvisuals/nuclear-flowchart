@@ -14,7 +14,7 @@ const renderParagraphs = (content: string) => {
   return paragraphs.map((paragraph, index) => (
     <p
       key={index}
-      className="text-base sm:text-lg text-gray-700 leading-relaxed mb-4 sm:mb-6 [&_a]:text-[#467aa9] [&_a]:font-bold [&_a]:underline [&_a]:hover:text-yellow-400"
+      className="text-base sm:text-lg text-gray-700 leading-relaxed mb-4 sm:mb-6 text-section-links"
       dangerouslySetInnerHTML={{ __html: paragraph }}
     />
   ));

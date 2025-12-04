@@ -34,7 +34,7 @@ function HeaderImageContainer() {
   );
 }
 
-function TitleContainer({ title, subtitle, contributors }: { title: string; subtitle: string; contributors: string[] }) {
+function TitleContainer({ title, subtitle }: { title: string; subtitle: string; contributors: string[] }) {
   return (
     <div className={styles.titleContainer}>
       <div className={styles.mainTitle}>
@@ -47,19 +47,6 @@ function TitleContainer({ title, subtitle, contributors }: { title: string; subt
           {subtitle}
         </p>
       </div>
-
-      {contributors.length > 0 && (
-        <div className={styles.byline}>
-          <p className={styles.bylineText}>
-            <span className={styles.bylineBold}>Contributors:</span>
-          </p>
-          {contributors.map(contributor => (
-            <p key={contributor} className={styles.bylineText}>
-              {contributor}
-            </p>
-          ))}
-        </div>
-      )}
       
       <div className={styles.horizontalDivider} />
     </div>

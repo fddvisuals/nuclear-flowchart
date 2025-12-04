@@ -80,3 +80,15 @@ svg text {
     opacity: 0.9;
   }
 }
+
+/* Text section link styles */
+.text-section-links a {
+  color: #467aa9;
+  font-weight: bold;
+  text-decoration: underline;
+  transition: color 0.15s ease;
+}
+
+.text-section-links a:hover {
+  color: #facc15;
+}

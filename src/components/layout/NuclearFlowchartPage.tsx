@@ -376,14 +376,30 @@ export function NuclearFlowchartPage() {
 
       {/* Data attribution note and credits */}
       {!isVisualizationExpanded && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 text-center">
-          <p className="text-sm italic text-gray-500 mb-4">Data collected through December 2025</p>
-          <div className="w-[150px] h-px bg-gray-300 mx-auto mb-4" />
-          <div className="text-sm text-gray-600 space-y-1">
-            <p>Edited by <span className="font-bold">Jason Fields</span></p>
-            <p>Design by <span className="font-bold">Bella Besuud</span></p>
-            <p>Feature illustration by <span className="font-bold">Daniel Ackerman</span></p>
-            <p>Concept and Development by <span className="font-bold">Pavak Patel</span></p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+          <p className="text-sm italic text-gray-500 mb-4 text-center">Data collected through December 2025</p>
+          <div className="w-[150px] h-px bg-gray-300 mx-auto mb-6" />
+          <div className="flex flex-col md:flex-row justify-center gap-8 md:gap-16">
+            {/* Contributors - Left side */}
+            <div className="text-base text-gray-600 text-center md:text-left">
+              <p className="font-bold text-lg mb-2">Research Contributors</p>
+              <div className="space-y-1">
+                <p><span className="font-bold">David Albright</span>, Institute for Science and International Security</p>
+                <p><span className="font-bold">Sarah Burkhard</span>, Institute for Science and International Security</p>
+                <p><span className="font-bold">Olli Heinonen</span>, Stimson Center</p>
+                <p><span className="font-bold">Andrea Stricker</span>, Foundation for Defense of Democracies</p>
+              </div>
+            </div>
+            {/* FDD Visuals - Right side */}
+            <div className="text-base text-gray-600 text-center md:text-left">
+              <p className="font-bold text-lg mb-2">Visuals</p>
+              <div className="space-y-1">
+                <p>Edited by <span className="font-bold">Jason Fields</span></p>
+                <p>Design by <span className="font-bold">Bella Besuud</span></p>
+                <p>Feature illustration by <span className="font-bold">Daniel Ackerman</span></p>
+                <p>Concept and Development by <span className="font-bold">Pavak Patel</span></p>
+              </div>
+            </div>
           </div>
         </div>
       )}
