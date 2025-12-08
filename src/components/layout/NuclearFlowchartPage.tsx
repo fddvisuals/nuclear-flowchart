@@ -377,27 +377,54 @@ export function NuclearFlowchartPage() {
       {/* Data attribution note and credits */}
       {!isVisualizationExpanded && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+          {/* Download Infographic Section */}
+          <div className="text-center mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Download Infographic</h2>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <a
+                href={`${import.meta.env.BASE_URL}images/fdd-infographic-post-strike-assessment-landscape.png`}
+                download="fdd-infographic-post-strike-assessment-landscape.png"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#00558c] hover:bg-[#004778] text-white font-semibold rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Landscape
+              </a>
+              <a
+                href={`${import.meta.env.BASE_URL}images/fdd-infographic-post-strike-assessment-portrait.png`}
+                download="fdd-infographic-post-strike-assessment-portrait.png"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#00558c] hover:bg-[#004778] text-white font-semibold rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Portrait
+              </a>
+            </div>
+          </div>
+
           <p className="text-sm italic text-gray-500 mb-4 text-center">Data collected through December 2025</p>
           <div className="w-[150px] h-px bg-gray-300 mx-auto mb-6" />
-          <div className="flex flex-col md:flex-row justify-center gap-8 md:gap-16">
+          <div className="flex flex-col md:flex-row justify-center gap-6">
             {/* Contributors - Left side */}
-            <div className="text-base text-gray-600 text-center md:text-left">
-              <p className="font-bold text-lg mb-2">Research Contributors</p>
-              <div className="space-y-1">
-                <p><span className="font-bold">David Albright</span>, Institute for Science and International Security</p>
-                <p><span className="font-bold">Sarah Burkhard</span>, Institute for Science and International Security</p>
-                <p><span className="font-bold">Olli Heinonen</span>, Stimson Center</p>
-                <p><span className="font-bold">Andrea Stricker</span>, Foundation for Defense of Democracies</p>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 flex-1 max-w-md">
+              <p className="font-bold text-lg text-gray-900 mb-4 border-b border-gray-200 pb-3">Research Contributors</p>
+              <div className="space-y-3 text-gray-600">
+                <p><span className="font-semibold text-gray-800">David Albright</span><br /><span className="text-sm">Institute for Science and International Security</span></p>
+                <p><span className="font-semibold text-gray-800">Sarah Burkhard</span><br /><span className="text-sm">Institute for Science and International Security</span></p>
+                <p><span className="font-semibold text-gray-800">Olli Heinonen</span><br /><span className="text-sm">Stimson Center</span></p>
+                <p><span className="font-semibold text-gray-800">Andrea Stricker</span><br /><span className="text-sm">Foundation for Defense of Democracies</span></p>
               </div>
             </div>
             {/* FDD Visuals - Right side */}
-            <div className="text-base text-gray-600 text-center md:text-left">
-              <p className="font-bold text-lg mb-2">Visuals</p>
-              <div className="space-y-1">
-                <p>Edited by <span className="font-bold">Jason Fields</span></p>
-                <p>Design by <span className="font-bold">Bella Besuud</span></p>
-                <p>Feature illustration by <span className="font-bold">Daniel Ackerman</span></p>
-                <p>Concept and Development by <span className="font-bold">Pavak Patel</span></p>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 flex-1 max-w-md">
+              <p className="font-bold text-lg text-gray-900 mb-4 border-b border-gray-200 pb-3">FDD Visuals</p>
+              <div className="space-y-3 text-gray-600">
+                <p>Concept and Development by <span className="font-semibold text-gray-800">Pavak Patel</span></p>
+                <p>Edited by <span className="font-semibold text-gray-800">Jason Fields</span></p>
+                <p>Creative Direction by <span className="font-semibold text-gray-800">Daniel Ackerman</span></p>
+                <p>Design by <span className="font-semibold text-gray-800">Bella Besuud</span></p>
               </div>
             </div>
           </div>

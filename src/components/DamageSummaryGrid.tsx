@@ -318,14 +318,8 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
                       const totalLocations = system.locations.length;
                       const isFocusActive = Boolean(activeImpact);
                       const isHighlighted = !isFocusActive || activeImpact?.systemIds.includes(system.id);
-                      const mainCategory = system.mainCategory?.toLowerCase() ?? '';
-                      const categoryBase = mainCategory.includes('weapon') ? '#1E1E1E' : '#00558C';
-                      const primaryBorder = lightenHexColor(categoryBase, 0.7);
-                      const subtleBorder = lightenHexColor(categoryBase, 0.82);
-                      const borderColor = isHighlighted ? primaryBorder : subtleBorder;
-                      const borderWidth = isHighlighted ? 3 : 2;
                       const cardClasses = [
-                        'bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-4 flex flex-col transition-all border',
+                        'bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-4 flex flex-col transition-all border border-gray-400',
                         isFocusActive && isHighlighted
                           ? 'shadow-[0_18px_34px_rgba(15,23,42,0.28)]'
                           : 'shadow-sm hover:shadow-md',
@@ -337,8 +331,6 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
                           key={system.id}
                           className={cardClasses}
                           style={{
-                            borderColor,
-                            borderWidth,
                             boxShadow: isFocusActive && isHighlighted
                               ? '0 18px 34px rgba(10, 18, 32, 0.35)'
                               : '0 10px 24px rgba(15, 23, 42, 0.08)',
