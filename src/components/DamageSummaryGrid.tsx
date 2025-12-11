@@ -1,27 +1,9 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { Crosshair } from 'lucide-react';
+import { Crosshair, Info } from 'lucide-react';
 import { FacilityData } from '../utils/csvLoader';
 import { buildSystemSummary, SystemSummaryResult } from '../utils/systemSummary';
 import { IMPACT_CONFIGS } from '../data/impactConfigs';
 import { FilterType } from '../data/nuclearData';
-
-function lightenHexColor(hex: string, ratio: number): string {
-  const sanitized = hex.replace('#', '');
-  if (sanitized.length !== 6) {
-    return hex;
-  }
-
-  const blend = (component: number) =>
-    Math.round(component + (255 - component) * Math.min(Math.max(ratio, 0), 1));
-
-  const r = parseInt(sanitized.slice(0, 2), 16);
-  const g = parseInt(sanitized.slice(2, 4), 16);
-  const b = parseInt(sanitized.slice(4, 6), 16);
-
-  return `#${[blend(r), blend(g), blend(b)]
-    .map((value) => value.toString(16).padStart(2, '0'))
-    .join('')}`;
-}
 
 interface DamageSummaryGridProps {
   facilityData: FacilityData[];
@@ -292,7 +274,7 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
             <div>
               <h3 className="text-xl sm:text-2xl font-black text-gray-900 uppercase">System-Level Damage Summary</h3>
               <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                The boxes below contain information on the damage sustained by various aspects of Iran’s nuclear program, divided into the steps of the weapon-building process. Hover over the icons in the boxes to view the status of individual locations.
+                The boxes below contain information on the damage sustained by various aspects of Iran's nuclear program, divided into the steps of the weapon-building process. Hover over the icons in the boxes to view the status of individual locations.
               </p>
             </div>
             <div className="text-xs text-gray-500">
@@ -301,18 +283,53 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
           </div>
 
           <div className="space-y-8 sm:space-y-10">
-            {['Centrifuge Infrastructure', 'Uranium Fuel Production', 'Plutonium Pathway', 'Nuclear Energy Production', 'Weaponization', 'Other'].map((category) => {
+            {[
+              { name: 'Centrifuge Infrastructure', severity: 4, severityLabel: 'Severe Impediments' },
+              { name: 'Uranium Fuel Production', severity: 4, severityLabel: 'Severe Impediments' },
+              { name: 'Plutonium Pathway', severity: 5, severityLabel: 'Full Impediments' },
+              { name: 'Nuclear Energy Production', severity: 1, severityLabel: 'Few Impediments' },
+              { name: 'Weaponization', severity: 4, severityLabel: 'Severe Impediments' },
+              { name: 'Other', severity: null, severityLabel: null },
+            ].map(({ name: category, severity, severityLabel }) => {
               const systems = filteredGroupedSystems.filter(s => s.displayCategory === category);
               if (systems.length === 0) return null;
 
+              const severityColor = severity === null ? null : severity >= 5 ? '#dc2626' : severity >= 4 ? '#ea580c' : severity >= 3 ? '#ca8a04' : severity >= 2 ? '#65a30d' : '#22c55e';
+
               return (
                 <div key={category}>
-                  <h4 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 border-b border-gray-200 pb-2 flex items-center gap-2">
-                    {category}
-                    <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                      {systems.length}
-                    </span>
-                  </h4>
+                  <div className="border-b border-gray-200 pb-3 mb-3 sm:mb-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                      <h4 className="text-base sm:text-lg font-bold text-gray-800 flex items-center gap-2">
+                        {category}
+                        <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                          {systems.length}
+                        </span>
+                      </h4>
+                      {severity !== null && (
+                        <div className="relative group flex items-center gap-3 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
+                          <div className="relative w-32 sm:w-40 h-2.5 bg-gray-300 rounded-full overflow-hidden">
+                            <div
+                              className="absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out"
+                              style={{
+                                width: `${(severity / 5) * 100}%`,
+                                backgroundColor: severityColor!,
+                              }}
+                            />
+                          </div>
+                          <span className="text-xs sm:text-sm font-semibold hidden sm:inline" style={{ color: severityColor! }}>
+                            {severityLabel}
+                          </span>
+                          <Info className="w-4 h-4 text-gray-400 cursor-help flex-shrink-0" />
+                          <div className="pointer-events-none absolute left-0 top-full z-30 hidden w-72 translate-y-2 rounded-lg border border-gray-200 bg-white px-4 py-3 text-xs text-gray-700 shadow-lg group-hover:block">
+                            <p className="leading-relaxed">
+                              Below are chokepoints to Iran's ability to build a nuclear weapon. These chokepoints were caused by Israel and the United States during the 12-Day War in June. The severity of the impediment to building a bomb is rated from 1 to 5, with 5 representing a complete blockage.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
                     {systems.map((system) => {
                       const totalLocations = system.locations.length;
