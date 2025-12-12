@@ -205,9 +205,9 @@ export function NuclearFlowchartPage() {
   // Track scroll position to show/hide mobile filter button
   useEffect(() => {
     const handleScroll = () => {
-      const waffleSection = document.getElementById('waffle-chart-section');
-      if (waffleSection) {
-        const rect = waffleSection.getBoundingClientRect();
+      const viewTabsSection = document.getElementById('view-tabs-container');
+      if (viewTabsSection) {
+        const rect = viewTabsSection.getBoundingClientRect();
         const navHeight = 60; // Mobile nav height
         setShowMobileFilters(rect.top < navHeight);
       }
@@ -266,7 +266,7 @@ export function NuclearFlowchartPage() {
       <StickyFilterPanel
         activeFilters={activeFilters}
         onFiltersChange={handleFiltersChange}
-        targetSectionIds={['waffle-chart-section', 'primary-view-section']}
+        targetSectionIds={['view-tabs-container', 'primary-view-section']}
         forceVisible={isVisualizationExpanded}
       />
       

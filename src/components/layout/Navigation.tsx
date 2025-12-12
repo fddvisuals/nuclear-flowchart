@@ -64,7 +64,7 @@ export function Navigation({ onHelpClick }: NavigationProps = {}) {
             <button
               onClick={onHelpClick}
               className="p-2 text-white hover:bg-white/10 rounded-lg transition-colors"
-              title="Show tutorial"
+              title="How to use this visual"
             >
               <HelpCircle className="w-5 h-5" />
             </button>
@@ -76,10 +76,10 @@ export function Navigation({ onHelpClick }: NavigationProps = {}) {
           <button
             onClick={onHelpClick}
             className="hidden md:flex ml-auto items-center gap-2 px-4 py-2 text-white hover:bg-white/10 rounded-lg transition-colors"
-            title="Show tutorial"
+            title="How to use this visual"
           >
             <HelpCircle className="w-5 h-5" />
-            <span className="text-sm font-medium">Help</span>
+            <span className="text-sm font-medium">How to Use This Visual</span>
           </button>
         )}
       </nav>
@@ -106,7 +106,7 @@ export function Navigation({ onHelpClick }: NavigationProps = {}) {
               className="flex items-center gap-3 w-full px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors"
             >
               <HelpCircle className="w-5 h-5" />
-              <span className="font-medium">Help & Tutorial</span>
+              <span className="font-medium">How to Use This Visual</span>
             </button>
           )}
         </div>
