@@ -135,18 +135,11 @@ const StackView: React.FC<StackViewProps> = ({
   return (
     <div className="w-full h-full bg-gray-50 p-6 overflow-y-auto">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-baseline justify-between mb-6">
-          <div>
-            <h3 className="text-2xl font-bold text-gray-900 uppercase">System-Level Damage Summary</h3>
-            <p className="text-sm text-gray-600 mt-1">
-              The boxes below contain information on the damage sustained by various aspects of Iran’s nuclear program, divided into the steps of the weapon-building process. Hover over the icons in the boxes to view the status of individual locations.
-            </p>
-          </div>
-          <div className="text-xs text-gray-500">
-            {hasFocus
-              ? `${displaySystems.length} of ${groupedSystems.length} systems`
-              : `${groupedSystems.length} systems`}
-          </div>
+        <div className="mb-6">
+          <h3 className="text-2xl font-bold text-gray-900 uppercase">System-Level Damage Summary</h3>
+          <p className="text-sm text-gray-600 mt-1">
+            The boxes below contain information on the damage sustained by various aspects of Iran's nuclear program, divided into the steps of the weapon-building process. A blockage in any of these systems would delay the creation of a bomb. Hover over the icons in the boxes to view the status of individual locations.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

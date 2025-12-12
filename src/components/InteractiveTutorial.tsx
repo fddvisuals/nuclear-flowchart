@@ -37,14 +37,6 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete, o
     },
     {
       id: 1,
-      title: 'Facility Status Overview (Waffle Chart)',
-      description: 'Each square represents a nuclear fuel processing or weaponization facility, color-coded by damage status. Hover over squares for details or use filters to highlight different statuses.',
-      icon: <Grid className="w-6 h-6" />,
-      targetElement: 'waffle-chart-section',
-      position: 'bottom',
-    },
-    {
-      id: 2,
       title: 'Damage Report by Component System',
       description: 'Explore detailed damage assessments grouped by nuclear production system. Each card shows all facility locations for that system, with color-coded status indicators. Hover over the icons to see specific facility details.',
       icon: <Factory className="w-6 h-6" />,
@@ -53,13 +45,21 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete, o
       action: 'switch-to-stack',
     },
     {
-      id: 3,
+      id: 2,
       title: 'Nuclear Program Damage Flowchart',
       description: 'Navigate the nuclear supply-chain flowchart to see what parts of the Iran nuclear program are still functional and what parts aren’t — and how they fit together. Zoom with the scroll wheel, pan by dragging, and click the expand button for fullscreen mode.',
       icon: <MapPin className="w-6 h-6" />,
       targetElement: 'visualization-section',
       position: 'top',
       action: 'switch-to-flowchart',
+    },
+    {
+      id: 3,
+      title: 'Facility Status Overview (Waffle Chart)',
+      description: 'Each square represents a nuclear fuel processing or weaponization facility, color-coded by damage status. Hover over squares for details or use filters to highlight different statuses.',
+      icon: <Grid className="w-6 h-6" />,
+      targetElement: 'waffle-chart-section',
+      position: 'top',
     },
     {
       id: 4,

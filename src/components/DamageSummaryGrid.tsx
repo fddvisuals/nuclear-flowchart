@@ -270,16 +270,11 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
 
       {showSystemGrid && (
         <>
-          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 sm:gap-4 mb-4 sm:mb-6">
-            <div>
-              <h3 className="text-xl sm:text-2xl font-black text-gray-900 uppercase">System-Level Damage Summary</h3>
-              <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                The boxes below contain information on the damage sustained by various aspects of Iran's nuclear program, divided into the steps of the weapon-building process. Hover over the icons in the boxes to view the status of individual locations.
-              </p>
-            </div>
-            <div className="text-xs text-gray-500">
-              {filteredGroupedSystems.length} systems
-            </div>
+          <div className="mb-4 sm:mb-6">
+            <h3 className="text-xl sm:text-2xl font-black text-gray-900 uppercase">System-Level Damage Summary</h3>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1">
+              The boxes below contain information on the damage sustained by various aspects of Iran's nuclear program, divided into the steps of the weapon-building process. A blockage in any of these systems would delay the creation of a bomb. Hover over the icons in the boxes to view the status of individual locations.
+            </p>
           </div>
 
           <div className="space-y-8 sm:space-y-10">
@@ -300,11 +295,8 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
                 <div key={category}>
                   <div className="border-b border-gray-200 pb-3 mb-3 sm:mb-4">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                      <h4 className="text-base sm:text-lg font-bold text-gray-800 flex items-center gap-2">
+                      <h4 className="text-base sm:text-lg font-bold text-gray-800">
                         {category}
-                        <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                          {systems.length}
-                        </span>
                       </h4>
                       {severity !== null && (
                         <div className="relative group flex items-center gap-3 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
@@ -323,7 +315,7 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
                           <Info className="w-4 h-4 text-gray-400 cursor-help flex-shrink-0" />
                           <div className="pointer-events-none absolute left-0 top-full z-30 hidden w-72 translate-y-2 rounded-lg border border-gray-200 bg-white px-4 py-3 text-xs text-gray-700 shadow-lg group-hover:block">
                             <p className="leading-relaxed">
-                              Below are chokepoints to Iran's ability to build a nuclear weapon. These chokepoints were caused by Israel and the United States during the 12-Day War in June. The severity of the impediment to building a bomb is rated from 1 to 5, with 5 representing a complete blockage.
+                              Below are chokepoints to Iran's ability to build a nuclear weapon. These chokepoints were caused by Israel and the United States during the 12-Day War in June.
                             </p>
                           </div>
                         </div>

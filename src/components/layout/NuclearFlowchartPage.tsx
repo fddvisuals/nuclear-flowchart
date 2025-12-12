@@ -281,15 +281,9 @@ export function NuclearFlowchartPage() {
         <Header />
       </div>
       <TextSection />
-      {/* Status Charts Section - Between text and visualization */}
+      {/* View tabs section */}
       {!isVisualizationExpanded && (
         <>
-          <div id="waffle-chart-section">
-            <StatusChartsSection
-              facilityData={facilityData}
-              externalFilters={activeFilters}
-            />
-          </div>
           <div id="view-tabs-container" className="max-w-7xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 flex flex-col items-center gap-3">
             <h3 className="text-base sm:text-lg font-semibold text-gray-700">Two Ways to Understand the Destruction Caused by the Strikes</h3>
             <div
@@ -373,6 +367,16 @@ export function NuclearFlowchartPage() {
           </div>
         )}
       </div>
+
+      {/* Status Charts Section - Facility Status */}
+      {!isVisualizationExpanded && (
+        <div id="waffle-chart-section">
+          <StatusChartsSection
+            facilityData={facilityData}
+            externalFilters={activeFilters}
+          />
+        </div>
+      )}
 
       {/* Data attribution note and credits */}
       {!isVisualizationExpanded && (
