@@ -386,8 +386,8 @@ export function NuclearFlowchartPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Download Infographic</h2>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <a
-                href={`${import.meta.env.BASE_URL}images/fdd-infographic-post-strike-assessment-landscape.png`}
-                download="fdd-infographic-post-strike-assessment-landscape.png"
+                href={`${import.meta.env.BASE_URL}images/fdd-infographic-post-strike-assessment-landscape.jpg`}
+                download="fdd-infographic-post-strike-assessment-landscape.jpg"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#00558c] hover:bg-[#004778] text-white font-semibold rounded-full transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -396,8 +396,8 @@ export function NuclearFlowchartPage() {
                 Landscape
               </a>
               <a
-                href={`${import.meta.env.BASE_URL}images/fdd-infographic-post-strike-assessment-portrait.png`}
-                download="fdd-infographic-post-strike-assessment-portrait.png"
+                href={`${import.meta.env.BASE_URL}images/fdd-infographic-post-strike-assessment-portrait.jpg`}
+                download="fdd-infographic-post-strike-assessment-portrait.jpg"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#00558c] hover:bg-[#004778] text-white font-semibold rounded-full transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
