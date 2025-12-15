@@ -19,7 +19,7 @@ Item_Id,Main-Category,Sub-Category,,Sub_Item,Locations,Sub_Item_Status
 18,Weaponization,Lab-scale uranium metal production,,ID1,Esfahan Uranium Metal Conversion Lab,Destroyed
 19,Weaponization,Lab-scale uranium metal production,,ID2,Esfahan Fuel Plate Manufacturing Plant (FPFP) Uranium Metal Line,Destroyed
 20,Weaponization,Plutonium reprocessing,,ID1,Unknown to Exist,Unknown/Non-operational
-21,Fuel Production,Enriched Uranium storage,,ID1,Esfahan Tunnel Complex - Entrances destroyed - Any intact Highly Enriched Uranium requires excavation,Destroyed
+21,Fuel Production,Enriched Uranium storage,,ID1,Esfahan Tunnel Complex - Two of three destroyed entrances likely reopened - Any intact Highly Enriched Uranium requires excavation,Unknown/Non-operational
 22,Fuel Production,Enriched Uranium storage,,ID2,Esfahan Shipping and Receiving Building - Possible Highly Enriched Uranium location,Destroyed
 23,Fuel Production,Heavy water reactor and plutonium fabrication,,ID1,Khondab (Arak) Under Construction Reactor & Hot Cells/Production Building,Destroyed
 24,Fuel Production,Power reactors and small modular reactors,,ID3,Darhovin reactor,Under construction
@@ -34,10 +34,10 @@ Item_Id,Main-Category,Sub-Category,,Sub_Item,Locations,Sub_Item_Status
 33,Fuel Production,Heavy water production,,ID1,Khondab (Arak) Plant,Destroyed
 34,Fuel Production,Heavy water production,,ID2,Exports to/storage in Oman under JCPOA 2016,Unknown/Non-operational
 35,Fuel Production,Russian supply,,ID1,Enriched uranium fuel,Known/Operational
-36,Fuel Production,Uranium enrichment,,ID1,Natanz Pilot Fuel Enrichment Plant - Above-ground plant - Likely no intact Highly Enriched Uranium - Below-ground plant (8-30 m),Destroyed
+36,Fuel Production,Uranium enrichment,,ID1,Natanz Pilot Fuel Enrichment Plant - Above-ground plant Fully destroyed/Likely no intact HEU - Below-ground plant (8-30 m) Likely destroyed,Destroyed
 37,Fuel Production,Uranium enrichment,,ID2,Fordow Fuel Enrichment Plant Qom - Deeply buried (60-90 m) - Any intact Highly Enriched Uranium requires excavation,Likely destroyed
-38,Fuel Production,Uranium enrichment,,ID3,Suspected enrichment plant Natanz Pickaxe Mountain Site (Deeply buried >100+ m),Unknown/Non-operational
-39,Fuel Production,Uranium enrichment,,ID4,Esfahan Fuel Enrichment Plant (Deeply buried),Under construction
+38,Fuel Production,Uranium enrichment,,ID3,Possible Future Enrichment Plant Natanz Pickaxe Mountain Site (Deeply buried >100+ m),Unknown/Non-operational
+39,Fuel Production,Uranium enrichment,,ID4,Planned Esfahan Fuel Enrichment Plant (Deeply buried),Unknown/Non-operational
 55,Fuel Production,Uranium enrichment,,ID6,Natanz Fuel Enrichment Plant (8-30 m) - Any intact Highly Enriched Uranium requires excavation,Destroyed
 40,Fuel Production,Uranium enrichment,,ID5,Lashkar Abad laser enrichment plant,Unknown/Non-operational
 41,Fuel Production,Uranium conversion/production of UF6,,ID1,Esfahan Uranium Conversion Facility,Destroyed

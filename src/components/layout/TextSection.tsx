@@ -28,7 +28,7 @@ Prior to the strikes, Tehran was only months away from being able to construct n
 
 While information is still developing, the United States and Israel caused severe impediments to the supply chain and stockpile of machinery and facilities Iran needs to produce enriched uranium fuel for nuclear weapons, as well as the enriched uranium fuel stockpiles themselves. They fully destroyed Iran's route to weapons-grade plutonium. In addition, Israel severely crippled Tehran's route to weaponization, eliminating not only key equipment and facilities, and the ability to produce fuel for the nuclear weapon core, but also administrative centers of the nuclear weapons program and more than a dozen nuclear scientists.
 
-Any of the damage to the individual elements of Iran's program listed here would slow or even prevent weaponization. Below is a view into which elements of Iran's program have suffered the greatest damage and how that damage affects Iran's ability to build a nuclear bomb. Of course, Iran may seek to recover buried assets and reconstitute its capabilities to build nuclear weapons.
+Any of the damage to the individual elements of Iran's program listed here would slow or even prevent weaponization. Below is a view into which elements of Iran's program have suffered the greatest damage and how that damage affects Iran's ability to build a nuclear bomb. Only International Atomic Energy Agency inspections, which Iran is refusing, can indicate remaining assets and the extent of damage. Of course, Iran may seek to recover buried assets and reconstitute its capabilities to build nuclear weapons.
 `,
   width
 }: TextSectionProps) {

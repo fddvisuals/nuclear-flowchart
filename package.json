@@ -2,15 +2,14 @@
   "name": "nuclear-flowchart-viewer",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "homepage": "https://fddvisuals.github.io/nuclear-flowchart",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
@@ -21,11 +20,6 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^4.1.2",
-    "@storybook/addon-a11y": "^10.0.6",
-    "@storybook/addon-docs": "^10.0.6",
-    "@storybook/addon-vitest": "^10.0.6",
-    "@storybook/react-vite": "^10.0.6",
     "@types/node": "^24.7.0",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
@@ -36,7 +30,6 @@
     "gh-pages": "^6.3.0",
     "playwright": "^1.56.1",
     "postcss": "^8.4.27",
-    "storybook": "^10.0.6",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.0.2",
     "vite": "^5.4.8",

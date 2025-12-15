@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { Crosshair, Info } from 'lucide-react';
+import { Crosshair } from 'lucide-react';
 import { FacilityData } from '../utils/csvLoader';
 import { buildSystemSummary, SystemSummaryResult } from '../utils/systemSummary';
 import { IMPACT_CONFIGS } from '../data/impactConfigs';
@@ -279,17 +279,15 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
 
           <div className="space-y-8 sm:space-y-10">
             {[
-              { name: 'Centrifuge Infrastructure', severity: 4, severityLabel: 'Severe Impediments' },
-              { name: 'Uranium Fuel Production', severity: 4, severityLabel: 'Severe Impediments' },
-              { name: 'Plutonium Pathway', severity: 5, severityLabel: 'Full Impediments' },
-              { name: 'Nuclear Energy Production', severity: 1, severityLabel: 'Few Impediments' },
-              { name: 'Weaponization', severity: 4, severityLabel: 'Severe Impediments' },
-              { name: 'Other', severity: null, severityLabel: null },
-            ].map(({ name: category, severity, severityLabel }) => {
+              { name: 'Centrifuge Infrastructure' },
+              { name: 'Uranium Fuel Production' },
+              { name: 'Plutonium Pathway' },
+              { name: 'Nuclear Energy Production' },
+              { name: 'Weaponization' },
+              { name: 'Other' },
+            ].map(({ name: category }) => {
               const systems = filteredGroupedSystems.filter(s => s.displayCategory === category);
               if (systems.length === 0) return null;
-
-              const severityColor = severity === null ? null : severity >= 5 ? '#dc2626' : severity >= 4 ? '#ea580c' : severity >= 3 ? '#ca8a04' : severity >= 2 ? '#65a30d' : '#22c55e';
 
               return (
                 <div key={category}>
@@ -298,28 +296,6 @@ const DamageSummaryGrid: React.FC<DamageSummaryGridProps> = ({
                       <h4 className="text-base sm:text-lg font-bold text-gray-800">
                         {category}
                       </h4>
-                      {severity !== null && (
-                        <div className="relative group flex items-center gap-3 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
-                          <div className="relative w-32 sm:w-40 h-2.5 bg-gray-300 rounded-full overflow-hidden">
-                            <div
-                              className="absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out"
-                              style={{
-                                width: `${(severity / 5) * 100}%`,
-                                backgroundColor: severityColor!,
-                              }}
-                            />
-                          </div>
-                          <span className="text-xs sm:text-sm font-semibold hidden sm:inline" style={{ color: severityColor! }}>
-                            {severityLabel}
-                          </span>
-                          <Info className="w-4 h-4 text-gray-400 cursor-help flex-shrink-0" />
-                          <div className="pointer-events-none absolute left-0 top-full z-30 hidden w-72 translate-y-2 rounded-lg border border-gray-200 bg-white px-4 py-3 text-xs text-gray-700 shadow-lg group-hover:block">
-                            <p className="leading-relaxed">
-                              Below are chokepoints to Iran's ability to build a nuclear weapon. These chokepoints were caused by Israel and the United States during the 12-Day War in June.
-                            </p>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
