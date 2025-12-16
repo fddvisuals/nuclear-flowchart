@@ -46,7 +46,7 @@
   flex-shrink: 0;
   width: 100%;
   max-width: 800px;
-  gap: 10px;
+  gap: 16px;
   margin-top: 20px; /* Space below the image */
   z-index: 3;
 }
