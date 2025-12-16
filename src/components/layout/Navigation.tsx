@@ -54,7 +54,7 @@ export function Navigation({ onHelpClick }: NavigationProps = {}) {
             : 'opacity-0 -translate-y-2.5 pointer-events-none'
         }`}>
           <span className="text-white font-semibold text-sm" style={{ fontFamily: 'Lato, sans-serif' }}>
-            Post-Strike Assessment: Israeli and U.S. Strikes Caused Major Bottlenecks in Iran's Nuclear Weapons Supply Chain
+            Post-Strike Assessment: Major Bottlenecks Exist in Iran's Nuclear Weapons Supply Chain
           </span>
         </div>
 

@@ -22,7 +22,8 @@ const renderParagraphs = (content: string) => {
 
 export function TextSection({
   content = `
-During the June 2025 strikes against Iran's nuclear program, the United States and Israel did serious damage to the Islamic Republic's ability to produce nuclear weapons, producing key bottlenecks and chokepoints.
+U.S. and Israeli strikes against Iran's nuclear program in June 2025 caused major bottlenecks and chokepoints in the regime’s nuclear weapons supply chain. A post-strike assessment can best be understood through: <span class="inline-flex items-center justify-center h-6 min-w-6 px-2 rounded-md bg-[#00558c] text-white text-sm font-bold align-middle">1</span> a system-level assessment of the damage sustained by Iran’s weapon-building process, divided into the steps of the weapons-building process, and <span class="inline-flex items-center justify-center h-6 min-w-6 px-2 rounded-md bg-[#00558c] text-white text-sm font-bold align-middle">2</span> an assessment of what facilities remain available for fuel production and weaponization. This visual explores both ways of understanding the destruction caused by the strikes.
+
 
 Prior to the strikes, Tehran was only months away from being able to construct nuclear weapons. It <a href="https://www.fdd.org/analysis/visuals/2024/05/23/what-to-know-about-irans-nuclear-program/" target="_blank">possessed</a> the key facilities necessary and had produced enough enriched uranium — if further enriched to weapons grade — for up to 22 nuclear weapons in five months, with enough ready for 11 weapons within a month. Iran was reportedly working to accelerate its ability to <a href="https://www.fdd.org/iranianweaponization" target="_blank">weaponize</a> the material and construct the weapons and had a team of scientists <a href="https://www.nytimes.com/2025/02/03/us/politics/iran-nuclear-weapon.html" target="_blank">working</a> on various projects in preparation for a final order from Iran's supreme leader.
 

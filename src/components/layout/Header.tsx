@@ -9,7 +9,7 @@ interface HeaderProps {
 
 export function Header({ 
   title = "Post-Strike Assessment:", 
-  subtitle = "U.S. and Israeli Strikes Caused Major Bottlenecks in Iran's Nuclear Weapons Supply Chain",
+  subtitle = "Major Bottlenecks Exist in Iran's Nuclear Weapons Supply Chain",
   showImage = true,
   contributors = [
     "David Albright, Institute for Science and International Security",

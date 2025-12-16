@@ -4,6 +4,7 @@ import { X, ChevronRight, ChevronLeft, Check, Hand, Filter, Grid, Factory, MapPi
 interface TutorialStep {
   id: number;
   title: string;
+  byline?: string;
   description: string;
   icon: React.ReactNode;
   targetElement?: string;
@@ -30,8 +31,9 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete, o
   const tutorialSteps: TutorialStep[] = [
     {
       id: 0,
-      title: 'Assessing Damage to Iran’s Nuclear Weapons Program',
-      description: 'This interactive tool allows you to explore the impact of Israeli and U.S. strikes on Iranian nuclear facilities. Let\'s take a quick tour of the key features.',
+      title: 'Post-Strike Assessment:',
+      byline: "Major Bottlenecks Exist in Iran's Nuclear Weapons Supply Chain",
+      description: 'Tutorial: This quick walkthrough is here to help you use the interactive tool. You can explore the impact of Israeli and U.S. strikes on Iranian nuclear facilities — let\'s take a quick tour of the key features.',
       icon: <Hand className="w-6 h-6" />,
       position: 'center',
     },
@@ -241,10 +243,13 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete, o
           <div className="px-6 py-4 text-white" style={{ backgroundColor: '#00558c' }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex-shrink-0">
-                  {currentStepData.icon}
+                <div className="flex flex-col leading-tight">
+                  <span className="inline-flex w-fit items-center rounded-full border border-white/80 px-2 py-0.5 text-sm font-semibold uppercase tracking-wide">Tutorial</span>
+                  <h3 className="text-base font-bold">{currentStepData.title}</h3>
+                  {currentStepData.byline && (
+                    <p className="text-xs font-medium opacity-90">{currentStepData.byline}</p>
+                  )}
                 </div>
-                <h3 className="text-lg font-bold">{currentStepData.title}</h3>
               </div>
               <button
                 onClick={handleSkip}
@@ -258,9 +263,11 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete, o
 
           {/* Content */}
           <div className="p-6">
-            <p className="text-gray-700 leading-relaxed mb-6">
-              {currentStepData.description}
-            </p>
+            <div className="border border-gray-200 rounded-md p-4 bg-gray-50 mb-6">
+              <p className="text-gray-700 leading-relaxed">
+                {currentStepData.description}
+              </p>
+            </div>
 
             {/* Progress Indicator */}
             <div className="flex items-center gap-2 mb-6">
