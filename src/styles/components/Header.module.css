@@ -4,8 +4,8 @@
   max-height: 700px;
   position: relative;
   flex-shrink: 0;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
+  width: 100%;
+  margin-left: 0;
   margin-top: 60px; /* Account for fixed navbar */
   overflow: hidden;
 }
@@ -47,7 +47,7 @@
   width: 100%;
   max-width: 800px;
   gap: 16px;
-  margin-top: 20px; /* Space below the image */
+  margin: 20px auto 0; /* Space below image + center container */
   z-index: 3;
 }
 
@@ -127,8 +127,8 @@
     height: 50vh;
     min-height: 280px;
     max-height: 400px;
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
+    width: 100%;
+    margin-left: 0;
   }
 
   .headerImage {

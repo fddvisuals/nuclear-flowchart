@@ -277,7 +277,7 @@ export function NuclearFlowchartPage() {
         isVisible={showMobileFilters && !isVisualizationExpanded}
       />
       
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col w-full items-stretch justify-center">
         <Header />
       </div>
       <TextSection />

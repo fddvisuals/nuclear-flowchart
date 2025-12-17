@@ -8,8 +8,8 @@ const renderParagraphs = (content: string) => {
   // Split by double line breaks or <p> tags to identify paragraphs
   const paragraphs = content
     .split(/\n\s*\n|<\/p>\s*<p[^>]*>|<p[^>]*>|<\/p>/)
-    .filter(para => para.trim() && !para.match(/^\s*$/))
-    .map(para => para.trim());
+    .filter((para) => para.trim() && !para.match(/^\s*$/))
+    .map((para) => para.trim());
 
   return paragraphs.map((paragraph, index) => (
     <p
@@ -31,7 +31,7 @@ While information is still developing, the United States and Israel caused sever
 
 Any of the damage to the individual elements of Iran's program listed here would slow or even prevent weaponization. Below is a view into which elements of Iran's program have suffered the greatest damage and how that damage affects Iran's ability to build a nuclear bomb. Only International Atomic Energy Agency inspections, which Iran is refusing, can indicate remaining assets and the extent of damage. Of course, Iran may seek to recover buried assets and reconstitute its capabilities to build nuclear weapons.
 `,
-  width
+  width,
 }: TextSectionProps) {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
