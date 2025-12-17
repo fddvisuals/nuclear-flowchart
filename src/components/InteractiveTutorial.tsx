@@ -194,7 +194,8 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete, o
     }
 
     // For elements with targets, position relative to viewport
-    return 'fixed bottom-8 left-1/2 transform -translate-x-1/2';
+    // Use higher bottom value on mobile to avoid URL bar
+    return 'fixed bottom-24 sm:bottom-8 left-1/2 transform -translate-x-1/2';
   };
 
   return (

@@ -190,11 +190,12 @@ export function NuclearFlowchartPage() {
     });
   }, []);
 
-  // Check if user has completed tutorial
+  // Check if user has completed tutorial (only auto-show on desktop)
   useEffect(() => {
     const tutorialCompleted = localStorage.getItem('nuclearFlowchartTutorialCompleted');
-    if (!tutorialCompleted) {
-      // Show tutorial after a short delay to let the page load
+    const isMobile = window.innerWidth < 768;
+    if (!tutorialCompleted && !isMobile) {
+      // Show tutorial after a short delay to let the page load (desktop only)
       const timer = setTimeout(() => {
         setShowTutorial(true);
       }, 1000);
