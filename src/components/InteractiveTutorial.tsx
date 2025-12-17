@@ -33,7 +33,7 @@ const InteractiveTutorial: React.FC<InteractiveTutorialProps> = ({ onComplete, o
       id: 0,
       title: 'Post-Strike Assessment:',
       byline: "Major Bottlenecks Exist in Iran's Nuclear Weapons Supply Chain",
-      description: 'Tutorial: This quick walkthrough is here to help you use the interactive tool. You can explore the impact of Israeli and U.S. strikes on Iranian nuclear facilities — let\'s take a quick tour of the key features.',
+      description: 'This quick walkthrough is here to help you use the interactive tool. You can explore the impact of Israeli and U.S. strikes on Iranian nuclear facilities — let\'s take a quick tour of the key features.',
       icon: <Hand className="w-6 h-6" />,
       position: 'center',
     },
