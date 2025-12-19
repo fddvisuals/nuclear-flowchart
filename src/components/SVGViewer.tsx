@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { FilterType } from '../data/nuclearData';
 import { loadFacilityData, FacilityData, getFacilityById } from '../utils/csvLoader';
-import { Map } from 'lucide-react';
+import { Map, Move, ZoomIn } from 'lucide-react';
 
 interface SVGViewerProps {
   activeFilters: FilterType[];
@@ -151,6 +151,19 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0, transformX: 0, transformY: 0 });
   const [svgDimensions, setSvgDimensions] = useState({ width: 2247, height: 5174 });
   const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
+  const [showInteractionHint, setShowInteractionHint] = useState(true);
+
+  // Hide hint after timeout or on first interaction
+  useEffect(() => {
+    if (!showInteractionHint) return;
+    const timer = setTimeout(() => setShowInteractionHint(false), 5000);
+    return () => clearTimeout(timer);
+  }, [showInteractionHint]);
+
+  // Dismiss hint on any interaction
+  const dismissHint = useCallback(() => {
+    if (showInteractionHint) setShowInteractionHint(false);
+  }, [showInteractionHint]);
 
   // Handle mini-map navigation
   const handleMiniMapNavigate = useCallback((x: number, y: number) => {
@@ -617,13 +630,14 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
       ref={containerRef}
       className={`w-full h-full overflow-hidden touch-none bg-gray-100 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'
         }`}
-      onMouseDown={handleMouseDown}
+      onMouseDown={(e) => { dismissHint(); handleMouseDown(e); }}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
-      onTouchStart={handleTouchStart}
+      onTouchStart={(e) => { dismissHint(); handleTouchStart(e); }}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onWheel={dismissHint}
     >
       {svgContent ? (
         <div
@@ -712,6 +726,56 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
           Fit
         </button>
       </div>
+
+      {/* Interaction hint overlay */}
+      {showInteractionHint && svgContent && (
+        <div 
+          className="absolute inset-0 pointer-events-none flex items-center justify-center z-20"
+          style={{ animation: 'fadeIn 0.3s ease-out' }}
+        >
+          <div 
+            className="bg-black/70 text-white px-6 py-4 rounded-xl shadow-2xl flex flex-col items-center gap-3"
+            style={{ animation: 'pulse 2s ease-in-out infinite, fadeOut 0.5s ease-out 4.5s forwards' }}
+          >
+            <div className="flex items-center gap-4">
+              <div className="flex flex-col items-center">
+                <Move className="w-8 h-8 mb-1" style={{ animation: 'panAnimation 1.5s ease-in-out infinite' }} />
+                <span className="text-sm font-medium">Drag to pan</span>
+              </div>
+              <div className="w-px h-12 bg-white/30" />
+              <div className="flex flex-col items-center">
+                <ZoomIn className="w-8 h-8 mb-1" style={{ animation: 'zoomAnimation 1.5s ease-in-out infinite' }} />
+                <span className="text-sm font-medium">Scroll to zoom</span>
+              </div>
+            </div>
+            <p className="text-xs text-white/70 mt-1">Click anywhere to dismiss</p>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes fadeOut {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.02); }
+        }
+        @keyframes panAnimation {
+          0%, 100% { transform: translate(0, 0); }
+          25% { transform: translate(-4px, 0); }
+          75% { transform: translate(4px, 0); }
+        }
+        @keyframes zoomAnimation {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.15); }
+        }
+      `}</style>
 
       {/* Mini-map */}
       {svgContent && containerDimensions.width > 0 && (
