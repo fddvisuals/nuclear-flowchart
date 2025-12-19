@@ -5,6 +5,7 @@ import StatusChartsSection from '../StatusChartsSection';
 import DamageSummaryGrid from '../DamageSummaryGrid';
 import StickyFilterPanel from '../StickyFilterPanel';
 import MobileFilterDrawer from '../MobileFilterDrawer';
+import MobileLegend from '../MobileLegend';
 import InteractiveTutorial from '../InteractiveTutorial';
 import { InfoTooltip } from '../InfoTooltip';
 import { FilterType } from '../../data/nuclearData';
@@ -262,6 +263,9 @@ export function NuclearFlowchartPage() {
       {showTutorial && <InteractiveTutorial onComplete={handleTutorialComplete} onViewChange={setActiveMainView} />}
 
       <Navigation onHelpClick={handleRestartTutorial} />
+      
+      {/* Mobile status legend - always visible on mobile */}
+      <MobileLegend isVisible={showMobileFilters && !isVisualizationExpanded} />
       
       {/* Desktop sticky filter panel */}
       <StickyFilterPanel
