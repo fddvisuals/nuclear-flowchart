@@ -615,7 +615,7 @@ const SVGViewer: React.FC<SVGViewerProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`w-full h-full overflow-hidden touch-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'
+      className={`w-full h-full overflow-hidden touch-none bg-gray-100 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'
         }`}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
